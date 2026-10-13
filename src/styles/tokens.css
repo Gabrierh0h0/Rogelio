@@ -1,0 +1,340 @@
+/*
+ * Tokens del set: plastilina con ambiente Coraline (ver referencia/estilo/estilo.md).
+ * Fondo oscuro azul-verde, luz cálida de maqueta, papel/cartón para el contenido,
+ * un acento cálido (caléndula) y dos colores semánticos (peligroso / no peligroso).
+ */
+:root {
+  /* Set (fondos, de más profundo a más cercano) */
+  --set-abismo: oklch(0.16 0.03 215);
+  --set-noche: oklch(0.22 0.04 205);
+  --set-fieltro: oklch(0.31 0.05 195);
+
+  /* Papel y cartón (paneles de contenido) */
+  --papel: oklch(0.93 0.04 85);
+  --papel-sombra: oklch(0.82 0.06 78);
+  --tinta: oklch(0.27 0.04 50);
+  --tinta-suave: oklch(0.42 0.04 55);
+
+  /* Texto sobre el set */
+  --crema: oklch(0.94 0.03 85);
+  --crema-suave: oklch(0.80 0.03 90);
+
+  /* Acento y semánticos (los únicos colores vivos) */
+  --calendula: oklch(0.77 0.15 68);
+  --arcilla-roja: oklch(0.60 0.17 30);
+  --musgo: oklch(0.70 0.11 135);
+  --piedra: oklch(0.68 0.025 150);
+
+  /* Luz de maqueta */
+  --luz-calida: oklch(0.88 0.09 80);
+
+  /* Mapeo shadcn */
+  --background: var(--set-noche);
+  --foreground: var(--crema);
+  --card: var(--papel);
+  --card-foreground: var(--tinta);
+  --primary: var(--calendula);
+  --primary-foreground: var(--tinta);
+  --secondary: var(--set-fieltro);
+  --secondary-foreground: var(--crema);
+  --muted: var(--set-fieltro);
+  --muted-foreground: var(--crema-suave);
+  --accent: var(--calendula);
+  --accent-foreground: var(--tinta);
+  --destructive: var(--arcilla-roja);
+  --border: oklch(0.94 0.03 85 / 0.12);
+  /* Crema y no caléndula: el foco tiene que verse también sobre el botón principal */
+  --ring: var(--crema);
+  --radius: 18px;
+
+  /* Tipografía: Gluten (letras blandas, como modeladas) + Nunito (redonda y legible) */
+  --fuente-display: "Gluten", "Nunito Variable", ui-rounded, system-ui, sans-serif;
+  --fuente-texto: "Nunito Variable", ui-rounded, system-ui, sans-serif;
+  --texto-base: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+  --texto-titulo: clamp(2.25rem, 1.4rem + 4vw, 5.5rem);
+  --texto-cifra: clamp(2.75rem, 1.6rem + 5vw, 7rem);
+  --texto-etiqueta: clamp(0.8rem, 0.75rem + 0.2vw, 0.95rem);
+
+  /* Movimiento "en doses": 12 cuadros por segundo */
+  --fps: 12;
+  --cuadro: 83.333ms;
+  --facil-salida: cubic-bezier(0.16, 1, 0.3, 1);
+  --facil-rebote: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Papel hecho a mano: borde irregular y sombra dura de foco */
+  --borde-mano: 22px 16px 26px 14px / 16px 24px 14px 22px;
+  --sombra-foco: 6px 8px 0 oklch(0.10 0.03 215 / 0.55);
+  --ruido: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* Panel de papel/cartón recortado a mano */
+.papel {
+  background-color: var(--papel);
+  background-image: var(--ruido);
+  color: var(--tinta);
+  border-radius: var(--borde-mano);
+  box-shadow:
+    var(--sombra-foco),
+    inset 0 -3px 0 var(--papel-sombra);
+}
+
+/* Grano de película: se mueve a saltos de 12 fps */
+.grano {
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  background-image: var(--grano);
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  animation: grano-salto calc(var(--cuadro) * 6) steps(6) infinite;
+  z-index: 50;
+}
+
+@keyframes grano-salto {
+  0% { transform: translate(0, 0); }
+  17% { transform: translate(-4%, 3%); }
+  33% { transform: translate(3%, -5%); }
+  50% { transform: translate(-6%, -2%); }
+  67% { transform: translate(5%, 4%); }
+  83% { transform: translate(-2%, 6%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Temblor de stop motion: cada cuadro la pieza queda un pelo movida */
+.temblor {
+  animation: temblor calc(var(--cuadro) * 4) steps(4) infinite;
+}
+
+@keyframes temblor {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(0.6px, -0.4px) rotate(0.15deg); }
+  50% { transform: translate(-0.5px, 0.5px) rotate(-0.1deg); }
+  75% { transform: translate(0.3px, 0.6px) rotate(0.08deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Viñeta de foco de maqueta sobre el set */
+.vineta {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 35%, transparent 45%, oklch(0.10 0.03 215 / 0.75) 100%);
+}
+
+/* Fondo del set: telón de fieltro azul-verde con un charco de luz cálida de foco.
+   El canvas 3D es transparente encima, así el color del fondo es uno solo. */
+.fondo-set {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(38% 46% at 62% 30%, oklch(0.45 0.07 175 / 0.55), transparent 70%),
+    radial-gradient(60% 50% at 22% 85%, oklch(0.32 0.06 210 / 0.5), transparent 75%),
+    linear-gradient(180deg, var(--set-abismo), var(--set-noche) 55%, oklch(0.18 0.035 215));
+}
+
+/* El panel entra en doses: 4 poses, cada una sostenida 2 cuadros */
+.panel-entra {
+  animation: panel-entra calc(var(--cuadro) * 4) steps(4, jump-end) both;
+  transform-origin: 50% 60%;
+}
+
+@keyframes panel-entra {
+  0% { opacity: 0; transform: scale(0.55) rotate(-4deg); }
+  25% { opacity: 1; transform: scale(0.82) rotate(2deg); }
+  50% { transform: scale(1.04) rotate(-1deg); }
+  75% { transform: scale(0.99) rotate(0.4deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Botón de plastilina: bloque blando con borde irregular y sombra dura */
+.boton-plastilina {
+  border-radius: 18px 14px 20px 12px / 14px 20px 12px 18px;
+  box-shadow:
+    0 5px 0 oklch(0.1 0.03 215 / 0.6),
+    inset 0 -3px 0 oklch(0 0 0 / 0.18),
+    inset 0 2px 0 oklch(1 0 0 / 0.18);
+  cursor: pointer;
+}
+.boton-plastilina:active:not(:disabled) {
+  transform: translateY(3px) scale(0.98, 0.95);
+  box-shadow:
+    0 2px 0 oklch(0.1 0.03 215 / 0.6),
+    inset 0 -2px 0 oklch(0 0 0 / 0.18);
+}
+.boton-plastilina:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Piedritas de avance: bolitas de plastilina, no círculos perfectos */
+.piedrita {
+  border-radius: 55% 45% 50% 50% / 50% 55% 45% 50%;
+}
+
+/* Pergamino que se desenrolla de arriba a abajo */
+.pergamino {
+  animation: desenrolla calc(var(--cuadro) * 4) steps(4, jump-end) both;
+  transform-origin: 50% 0;
+}
+
+@keyframes desenrolla {
+  0% { transform: scaleY(0.08); }
+  25% { transform: scaleY(0.45); }
+  50% { transform: scaleY(0.85); }
+  75% { transform: scaleY(1.03); }
+  100% { transform: none; }
+}
+
+/* "Amasando plastilina..." con puntos en doses */
+.cargando::after {
+  content: "";
+  display: inline-block;
+  width: 1.5em;
+  text-align: left;
+  animation: puntos calc(var(--cuadro) * 12) steps(4) infinite;
+}
+
+@keyframes puntos {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+/* ---------- Pergamino rasgado (panel de contenido y pergaminos del piso) ---------- */
+:root {
+  --pergamino: oklch(0.88 0.06 85);
+  --pergamino-quemado: oklch(0.62 0.09 65);
+  --pergamino-fibra: oklch(0.95 0.035 88);
+  /* arrugas: relieve de papel estrujado (luz difusa sobre ruido fractal) */
+  --arrugas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='a' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008 0.012' numOctaves='5' seed='7'/%3E%3CfeDiffuseLighting lighting-color='%23fff6e0' surfaceScale='5'%3E%3CfeDistantLight azimuth='235' elevation='38'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
+}
+
+.papel-rasgado {
+  /* la sombra se aplica al contorno recortado (drop-shadow respeta el clip-path de los hijos) */
+  filter: drop-shadow(5px 9px 0 oklch(0.1 0.03 215 / 0.45)) drop-shadow(0 18px 24px oklch(0.08 0.03 215 / 0.35));
+  color: var(--tinta);
+}
+
+.papel-rasgado__fibra,
+.papel-rasgado__hoja {
+  position: absolute;
+  inset: 0;
+  animation: hervir calc(var(--cuadro) * 6) step-end infinite;
+}
+
+/* el borde roto deja ver la fibra clara del papel */
+.papel-rasgado__fibra {
+  background: var(--pergamino-fibra);
+  clip-path: var(--borde-a);
+  --clip-a: var(--borde-a);
+  --clip-b: var(--borde-b);
+  --clip-c: var(--borde-c);
+}
+
+.papel-rasgado__hoja {
+  clip-path: var(--hoja-a);
+  --clip-a: var(--hoja-a);
+  --clip-b: var(--hoja-b);
+  --clip-c: var(--hoja-c);
+  background-color: var(--pergamino);
+  background-image:
+    radial-gradient(130% 120% at 50% 45%, transparent 52%, oklch(0.55 0.1 60 / 0.45) 100%),
+    radial-gradient(40% 30% at 18% 22%, oklch(0.7 0.08 70 / 0.18), transparent 70%),
+    radial-gradient(35% 28% at 82% 78%, oklch(0.68 0.09 65 / 0.2), transparent 70%),
+    var(--arrugas),
+    var(--ruido);
+  background-size: auto, auto, auto, 700px 700px, 160px 160px;
+  background-blend-mode: normal, normal, normal, multiply, multiply;
+}
+
+/* hervor: el contorno cambia cada 2 cuadros, como papel manipulado entre fotos */
+@keyframes hervir {
+  0% { clip-path: var(--clip-a); }
+  33.33% { clip-path: var(--clip-b); }
+  66.66% { clip-path: var(--clip-c); }
+}
+
+/* sale del cráter: el papel se asoma pequeño y torcido, se estira y se asienta (en doses) */
+.sale-del-crater {
+  animation: sale-del-crater calc(var(--cuadro) * 6) steps(6, jump-end) both;
+  transform-origin: 50% 55%;
+}
+
+@keyframes sale-del-crater {
+  0% { opacity: 0; transform: scale(0.12, 0.08) rotate(-14deg); }
+  17% { opacity: 1; transform: scale(0.35, 0.28) rotate(9deg); }
+  33% { transform: scale(0.72, 0.62) rotate(-5deg); }
+  50% { transform: scale(1.06, 1.1) rotate(2deg); }
+  67% { transform: scale(0.97, 0.96) rotate(-0.8deg); }
+  83% { transform: scale(1.01) rotate(0.3deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* si el contenido no cabe, la barra de desplazamiento es una tira de tinta, no la del sistema */
+.papel-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.55 0.08 60 / 0.6) transparent;
+}
+
+/* geoda del piso: salta acostada, gira hacia el público y se asienta (en doses) */
+.geoda {
+  filter: drop-shadow(6px 10px 0 oklch(0.1 0.03 215 / 0.5)) drop-shadow(0 20px 28px oklch(0.08 0.03 215 / 0.4));
+  animation: geoda-sale calc(var(--cuadro) * 7) steps(7, jump-end) both;
+  transform-origin: 50% 70%;
+}
+
+@keyframes geoda-sale {
+  0% { opacity: 0; transform: translateY(32vh) perspective(900px) rotateX(78deg) scale(0.14) rotate(-30deg); }
+  14% { opacity: 1; transform: translateY(18vh) perspective(900px) rotateX(70deg) scale(0.3) rotate(-18deg); }
+  29% { transform: translateY(4vh) perspective(900px) rotateX(48deg) scale(0.62) rotate(-6deg); }
+  43% { transform: translateY(-3vh) perspective(900px) rotateX(14deg) scale(0.98) rotate(4deg); }
+  57% { transform: perspective(900px) rotateX(-6deg) scale(1.05, 1.02) rotate(-1.5deg); }
+  71% { transform: perspective(900px) rotateX(2deg) scale(0.98) rotate(0.6deg); }
+  86% { transform: scale(1.01); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* los 3 cuadros del dibujo se turnan cada 2 cuadros, como el papel del panel */
+.geoda__cuadro {
+  visibility: hidden;
+  animation: geoda-hierve calc(var(--cuadro) * 6) step-end infinite;
+}
+.geoda__cuadro:nth-of-type(1) { visibility: visible; }
+.geoda__cuadro:nth-of-type(2) { animation-delay: calc(var(--cuadro) * -4); }
+.geoda__cuadro:nth-of-type(3) { animation-delay: calc(var(--cuadro) * -2); }
+
+@keyframes geoda-hierve {
+  0% { visibility: visible; }
+  33.33% { visibility: hidden; }
+}
+
+/* destello del choque: un cuadro blanco, otro tenue y se va (una sola vez, nunca parpadea) */
+.destello {
+  background: oklch(0.98 0.03 85);
+  animation: destello calc(var(--cuadro) * 4) steps(4, jump-end) both;
+}
+
+@keyframes destello {
+  0% { opacity: 0.75; }
+  25% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grano,
+  .temblor,
+  .panel-entra,
+  .pergamino,
+  .cargando::after,
+  .papel-rasgado__fibra,
+  .papel-rasgado__hoja,
+  .sale-del-crater,
+  .geoda,
+  .geoda__cuadro,
+  .destello {
+    animation: none;
+  }
+}

@@ -1,0 +1,295 @@
+{
+ "catalogo": {
+  "validos": 42582,
+  "pha": 2550,
+  "acuerdo_regla": 0.9988257949368278,
+  "fecha": "2026-10-11"
+ },
+ "anio_corte": 2024,
+ "anio_actual": 2026,
+ "por_anio": [
+  {
+   "anio": 2000,
+   "descubiertos": 368,
+   "pct_pha": 0.2418,
+   "H_mediana": 19.805,
+   "pct_grandes": 0.8397
+  },
+  {
+   "anio": 2001,
+   "descubiertos": 513,
+   "pct_pha": 0.1969,
+   "H_mediana": 19.9,
+   "pct_grandes": 0.8031
+  },
+  {
+   "anio": 2002,
+   "descubiertos": 635,
+   "pct_pha": 0.1969,
+   "H_mediana": 20.0,
+   "pct_grandes": 0.8173
+  },
+  {
+   "anio": 2003,
+   "descubiertos": 477,
+   "pct_pha": 0.1656,
+   "H_mediana": 20.24,
+   "pct_grandes": 0.7338
+  },
+  {
+   "anio": 2004,
+   "descubiertos": 546,
+   "pct_pha": 0.1685,
+   "H_mediana": 21.06,
+   "pct_grandes": 0.6319
+  },
+  {
+   "anio": 2005,
+   "descubiertos": 639,
+   "pct_pha": 0.1346,
+   "H_mediana": 21.18,
+   "pct_grandes": 0.5947
+  },
+  {
+   "anio": 2006,
+   "descubiertos": 612,
+   "pct_pha": 0.116,
+   "H_mediana": 21.5,
+   "pct_grandes": 0.5523
+  },
+  {
+   "anio": 2007,
+   "descubiertos": 639,
+   "pct_pha": 0.1236,
+   "H_mediana": 22.03,
+   "pct_grandes": 0.4992
+  },
+  {
+   "anio": 2008,
+   "descubiertos": 804,
+   "pct_pha": 0.1119,
+   "H_mediana": 22.275,
+   "pct_grandes": 0.4652
+  },
+  {
+   "anio": 2009,
+   "descubiertos": 775,
+   "pct_pha": 0.0929,
+   "H_mediana": 22.6,
+   "pct_grandes": 0.4232
+  },
+  {
+   "anio": 2010,
+   "descubiertos": 1109,
+   "pct_pha": 0.1136,
+   "H_mediana": 22.03,
+   "pct_grandes": 0.4968
+  },
+  {
+   "anio": 2011,
+   "descubiertos": 1021,
+   "pct_pha": 0.1077,
+   "H_mediana": 22.33,
+   "pct_grandes": 0.4594
+  },
+  {
+   "anio": 2012,
+   "descubiertos": 1088,
+   "pct_pha": 0.0836,
+   "H_mediana": 22.7,
+   "pct_grandes": 0.4136
+  },
+  {
+   "anio": 2013,
+   "descubiertos": 1170,
+   "pct_pha": 0.0889,
+   "H_mediana": 22.705,
+   "pct_grandes": 0.4085
+  },
+  {
+   "anio": 2014,
+   "descubiertos": 1652,
+   "pct_pha": 0.0781,
+   "H_mediana": 23.1,
+   "pct_grandes": 0.3735
+  },
+  {
+   "anio": 2015,
+   "descubiertos": 1668,
+   "pct_pha": 0.0725,
+   "H_mediana": 23.3,
+   "pct_grandes": 0.3417
+  },
+  {
+   "anio": 2016,
+   "descubiertos": 1895,
+   "pct_pha": 0.057,
+   "H_mediana": 23.78,
+   "pct_grandes": 0.286
+  },
+  {
+   "anio": 2017,
+   "descubiertos": 1981,
+   "pct_pha": 0.048,
+   "H_mediana": 24.2,
+   "pct_grandes": 0.2216
+  },
+  {
+   "anio": 2018,
+   "descubiertos": 1738,
+   "pct_pha": 0.027,
+   "H_mediana": 24.5,
+   "pct_grandes": 0.1968
+  },
+  {
+   "anio": 2019,
+   "descubiertos": 2299,
+   "pct_pha": 0.0304,
+   "H_mediana": 24.6,
+   "pct_grandes": 0.1618
+  },
+  {
+   "anio": 2020,
+   "descubiertos": 2709,
+   "pct_pha": 0.0277,
+   "H_mediana": 24.82,
+   "pct_grandes": 0.1292
+  },
+  {
+   "anio": 2021,
+   "descubiertos": 2875,
+   "pct_pha": 0.0188,
+   "H_mediana": 24.98,
+   "pct_grandes": 0.0946
+  },
+  {
+   "anio": 2022,
+   "descubiertos": 2999,
+   "pct_pha": 0.018,
+   "H_mediana": 25.05,
+   "pct_grandes": 0.0937
+  },
+  {
+   "anio": 2023,
+   "descubiertos": 2783,
+   "pct_pha": 0.0205,
+   "H_mediana": 24.96,
+   "pct_grandes": 0.1128
+  },
+  {
+   "anio": 2024,
+   "descubiertos": 3005,
+   "pct_pha": 0.0183,
+   "H_mediana": 25.02,
+   "pct_grandes": 0.1035
+  },
+  {
+   "anio": 2025,
+   "descubiertos": 3157,
+   "pct_pha": 0.0136,
+   "H_mediana": 25.05,
+   "pct_grandes": 0.0931
+  },
+  {
+   "anio": 2026,
+   "descubiertos": 2080,
+   "pct_pha": 0.0106,
+   "H_mediana": 25.43,
+   "pct_grandes": 0.0899
+  }
+ ],
+ "periodos": [
+  {
+   "periodo": "Histórico (< 2024)",
+   "asteroides": 34340,
+   "pct_pha": 0.0708,
+   "pct_H_menor_22": 0.3187,
+   "H_mediana": 23.745,
+   "arco_mediano_dias": 28.0,
+   "obs_medianas": 46.0
+  },
+  {
+   "periodo": "Recientes (2024-2026)",
+   "asteroides": 8242,
+   "pct_pha": 0.0146,
+   "pct_H_menor_22": 0.0961,
+   "H_mediana": 25.13,
+   "arco_mediano_dias": 10.0,
+   "obs_medianas": 34.0
+  }
+ ],
+ "calidad_por_periodo": {
+  "Histórico (< 2024)": {
+   "Buena (U 0-3)": 32.9,
+   "Media (U 4-6)": 18.8,
+   "Incierta (U 7-9)": 48.2
+  },
+  "Recientes (2024-2026)": {
+   "Buena (U 0-3)": 1.9,
+   "Media (U 4-6)": 29.5,
+   "Incierta (U 7-9)": 68.6
+  }
+ },
+ "particion": {
+  "train": 27472,
+  "validacion": 6868,
+  "test": 8242,
+  "pha_train": 1944,
+  "pha_validacion": 486,
+  "pha_test": 120
+ },
+ "por_arco_grandes": [
+  {
+   "Grupo": "Todos",
+   "Asteroides": 792,
+   "PHA reales": 120,
+   "% PHA": 0.1515,
+   "PHA detectados": 119,
+   "Recall": 0.9917,
+   "Precision": 0.4312,
+   "F2": 0.787,
+   "PR-AUC": 0.7888,
+   "Falsas alarmas": 157
+  },
+  {
+   "Grupo": "< 30 días",
+   "Asteroides": 260,
+   "PHA reales": 37,
+   "% PHA": 0.1423,
+   "PHA detectados": 37,
+   "Recall": 1.0,
+   "Precision": 0.37,
+   "F2": 0.746,
+   "PR-AUC": 0.781,
+   "Falsas alarmas": 63
+  },
+  {
+   "Grupo": "30 días - 1 año",
+   "Asteroides": 516,
+   "PHA reales": 73,
+   "% PHA": 0.1415,
+   "PHA detectados": 72,
+   "Recall": 0.9863,
+   "Precision": 0.4417,
+   "F2": 0.7912,
+   "PR-AUC": 0.8107,
+   "Falsas alarmas": 91
+  },
+  {
+   "Grupo": "> 1 año",
+   "Asteroides": 16,
+   "PHA reales": 10,
+   "% PHA": 0.625,
+   "PHA detectados": 10,
+   "Recall": 1.0,
+   "Precision": 0.7692,
+   "F2": 0.9434,
+   "PR-AUC": 0.8924,
+   "Falsas alarmas": 3
+  }
+ ],
+ "alertas_b": {
+  "tasa_validacion": 0.11517181129877693,
+  "tasa_test": 0.03482164523173987
+ }
+}

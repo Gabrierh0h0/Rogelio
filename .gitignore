@@ -1,0 +1,10 @@
+node_modules
+dist
+*.local
+
+# referencias de estilo (incluyen imágenes de terceros) y respaldos de Blender
+referencia/
+*.blend1
+
+# Vercel
+.vercel

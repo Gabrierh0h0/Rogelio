@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource/gluten/600.css";
+@import "@fontsource/gluten/800.css";
+@import "@fontsource-variable/nunito";
+@import "./tokens.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Puente entre los tokens del set (tokens.css) y las utilidades de Tailwind / shadcn. */
+@theme inline {
+  --font-display: var(--fuente-display);
+  --font-sans: var(--fuente-texto);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--ring);
+
+  --color-abismo: var(--set-abismo);
+  --color-noche: var(--set-noche);
+  --color-fieltro: var(--set-fieltro);
+  --color-papel: var(--papel);
+  --color-papel-sombra: var(--papel-sombra);
+  --color-tinta: var(--tinta);
+  --color-crema: var(--crema);
+  --color-calendula: var(--calendula);
+  --color-arcilla: var(--arcilla-roja);
+  --color-musgo: var(--musgo);
+  --color-piedra: var(--piedra);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/60;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-size: var(--texto-base);
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 3px;
+  }
+}

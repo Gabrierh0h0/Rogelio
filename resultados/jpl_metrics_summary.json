@@ -1,0 +1,152 @@
+{
+  "fecha_catalogo": "2026-10-11",
+  "anio_corte": 2024,
+  "resumen": {
+    "Catálogo (fecha de descarga)": "42,582 NEOs válidos (2026-10-11)",
+    "Acuerdo regla CNEOS vs etiqueta": "99.88%",
+    "% PHA: Train vs Test": "7.08% vs 1.46%",
+    "H mediana: Train vs Test": "23.7 vs 25.1",
+    "Ganador A / B / C": "Random Forest / Bagging / Gradient Boosting",
+    "PR-AUC Val -> Test (B)": "0.8650 -> 0.7843",
+    "Recall Val -> Test (B)": "0.9671 -> 0.9917",
+    "PHA detectados en Test (B)": "119 de 120",
+    "Falsas alarmas en Test (B)": "168 de 8,122 no peligrosos",
+    "Recall grandes por calidad (Buena / Media / Incierta)": "1.000 / 0.984 / 1.000",
+    "Variables con drift (PSI >= 0.25)": "H"
+  },
+  "evaluacion": {
+    "A_completo": {
+      "modelo_nombre": "Random Forest",
+      "umbral": 0.165,
+      "val": {
+        "pr_auc": 0.9984299519398541,
+        "roc_auc": 0.9998692632184396,
+        "f2": 0.9905853458862055,
+        "f1": 0.9827411167512691,
+        "recall": 0.9958847736625515,
+        "precision": 0.969939879759519,
+        "accuracy": 0.9975247524752475,
+        "positivos": 486,
+        "falsos_negativos": 2,
+        "falsos_positivos": 15
+      },
+      "test": {
+        "pr_auc": 0.9975502537069599,
+        "roc_auc": 0.9999676803742921,
+        "f2": 0.9787928221859706,
+        "f1": 0.9486166007905138,
+        "recall": 1.0,
+        "precision": 0.9022556390977443,
+        "accuracy": 0.998422712933754,
+        "positivos": 120,
+        "falsos_negativos": 0,
+        "falsos_positivos": 13
+      },
+      "test_umbral_05": {
+        "pr_auc": 0.9975502537069599,
+        "roc_auc": 0.9999676803742921,
+        "f2": 0.9850993377483444,
+        "f1": 0.9754098360655737,
+        "recall": 0.9916666666666667,
+        "precision": 0.9596774193548387,
+        "accuracy": 0.9992720213540403,
+        "positivos": 120,
+        "falsos_negativos": 1,
+        "falsos_positivos": 5
+      }
+    },
+    "B_sin_MOID": {
+      "modelo_nombre": "Bagging",
+      "umbral": 0.22,
+      "val": {
+        "pr_auc": 0.8649976073693674,
+        "roc_auc": 0.9875982218508073,
+        "f2": 0.8592321755027422,
+        "f1": 0.7361002349256069,
+        "recall": 0.9670781893004116,
+        "precision": 0.5941845764854614,
+        "accuracy": 0.9509318578916716,
+        "positivos": 486,
+        "falsos_negativos": 16,
+        "falsos_positivos": 321
+      },
+      "test": {
+        "pr_auc": 0.7843041855240749,
+        "roc_auc": 0.9936479110235574,
+        "f2": 0.7757496740547588,
+        "f1": 0.5847665847665847,
+        "recall": 0.9916666666666667,
+        "precision": 0.4146341463414634,
+        "accuracy": 0.9794952681388013,
+        "positivos": 120,
+        "falsos_negativos": 1,
+        "falsos_positivos": 168
+      },
+      "test_umbral_05": {
+        "pr_auc": 0.7843041855240749,
+        "roc_auc": 0.9936479110235574,
+        "f2": 0.3281853281853282,
+        "f1": 0.43037974683544306,
+        "recall": 0.2833333333333333,
+        "precision": 0.8947368421052632,
+        "accuracy": 0.9890803203106042,
+        "positivos": 120,
+        "falsos_negativos": 86,
+        "falsos_positivos": 4
+      }
+    },
+    "C_sin_definicion": {
+      "modelo_nombre": "Gradient Boosting",
+      "umbral": 0.08787580513909442,
+      "val": {
+        "pr_auc": 0.22413457568131545,
+        "roc_auc": 0.8060306249701772,
+        "f2": 0.43648847474252084,
+        "f1": 0.2717557251908397,
+        "recall": 0.7325102880658436,
+        "precision": 0.1668228678537957,
+        "accuracy": 0.7221898660454281,
+        "positivos": 486,
+        "falsos_negativos": 130,
+        "falsos_positivos": 1778
+      },
+      "test": {
+        "pr_auc": 0.09828212802093766,
+        "roc_auc": 0.8665522654518591,
+        "f2": 0.17055342847198052,
+        "f1": 0.07799442896935933,
+        "recall": 0.8166666666666667,
+        "precision": 0.040952778938570834,
+        "accuracy": 0.718878912885222,
+        "positivos": 120,
+        "falsos_negativos": 22,
+        "falsos_positivos": 2295
+      },
+      "test_umbral_05": {
+        "pr_auc": 0.09828212802093766,
+        "roc_auc": 0.8665522654518591,
+        "f2": 0.0,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "accuracy": 0.9850764377578257,
+        "positivos": 120,
+        "falsos_negativos": 120,
+        "falsos_positivos": 3
+      }
+    }
+  },
+  "psi": {
+    "H": 0.49837385478164026,
+    "q": 0.035001276272495906,
+    "t_jup": 0.015378462509276802,
+    "e": 0.014595614606797373,
+    "per": 0.014057288799810882,
+    "a": 0.01400245861584516,
+    "n": 0.013794608618956103,
+    "ad": 0.013546905814977094,
+    "i": 0.012368826963815919,
+    "om": 0.010572117625014074,
+    "w": 0.0014943268392398493
+  }
+}
