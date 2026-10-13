@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/(expo|proyecto)", "destination": "/index.html" }]
+}

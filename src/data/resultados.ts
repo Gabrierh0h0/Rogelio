@@ -1,5 +1,5 @@
 /*
- * Única puerta de entrada a las cifras del proyecto. Todo sale de resultados/ (copia de lo que exporta el notebook),
+ * Única puerta de entrada a las cifras del proyecto. Todo sale de resultados/, copia exacta de lo
  * que exportan los notebooks; aquí no se escribe ningún número a mano.
  */
 import metricasJson from "@resultados/metrics_summary.json";

@@ -13,6 +13,7 @@ import { DIAPOSITIVAS } from "@/presentacion/diapositivas";
 import { REACCION_FASE, type Fase } from "@/presentacion/cinematica";
 import { Impacto, sacudida } from "./Impacto";
 import { DinoVolador, Mundo } from "./Apocalipsis";
+import { ExtrasCoreografia } from "./ExtrasCoreografia";
 import { Dino } from "./Dino";
 import { Asteroides } from "./Asteroides";
 import { Banquito, Estrellas, Geodas, Luces, Planeta } from "./Set";
@@ -99,6 +100,7 @@ function Contenido({ indice, quieto, onElegir, onSobre, onGeoda, geoda, onListo,
           onSobre={onSobre}
           posActiva={posActiva}
         />
+        <ExtrasCoreografia quieto={quieto} />
         <AvisaListo onListo={onListo} />
       </Suspense>
     </>

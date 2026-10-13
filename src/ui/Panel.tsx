@@ -1,11 +1,12 @@
 /*
- * El papel con el contenido de la diapositiva. Aparece cuando el asteroide ya se abrió
- * detrás (TIEMPOS.panel), con una entrada en doses. Mide lo mismo que usa la escena 3D
+ * El papel con el contenido de la diapositiva. Aparece cuando termina la cinemática de llegada
+ * del asteroide (presentacion/coreografias.ts), con su propia entrada en doses. Mide lo mismo que usa la escena 3D
  * para colocar el asteroide abierto (src/presentacion/disposicion.ts).
  */
 import { useEffect, useState } from "react";
 import { capituloDe, DIAPOSITIVAS, TOTAL } from "@/presentacion/diapositivas";
-import { TIEMPOS, type Disposicion } from "@/presentacion/disposicion";
+import type { Disposicion } from "@/presentacion/disposicion";
+import { coreografiaDe } from "@/presentacion/coreografias";
 import { ContenidoDiapositiva } from "@/presentacion/contenido";
 import { PapelRasgado } from "./Papel";
 
@@ -19,7 +20,7 @@ export function Panel({ indice, disp, quieto, oculto = false }: Props) {
   useEffect(() => {
     if (indice === visible) return;
     setMostrar(false);
-    const espera = quieto ? 0 : TIEMPOS.panel * 1000;
+    const espera = quieto ? 0 : coreografiaDe(indice).panel * 1000;
     const id = window.setTimeout(() => {
       setVisible(indice);
       setMostrar(true);
@@ -44,7 +45,7 @@ export function Panel({ indice, disp, quieto, oculto = false }: Props) {
         <PapelRasgado
           key={visible}
           semilla={visible + 3}
-          className="sale-del-crater pointer-events-auto flex max-h-full w-full max-w-[900px]"
+          className={`${coreografiaDe(visible).entrada} pointer-events-auto flex max-h-full w-full max-w-[900px]`}
           claseContenido="papel-scroll flex max-h-full w-full flex-col overflow-y-auto px-[clamp(1.6rem,3.2vw,3rem)] py-[clamp(1.4rem,2.6vw,2.4rem)]"
         >
         <article aria-labelledby="titulo-diapositiva" className="flex flex-col">

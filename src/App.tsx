@@ -3,6 +3,7 @@
  * Navegación: flechas / AvPág / RePág / espacio / Inicio / Fin, botones, piedritas de
  * avance, tocar un asteroide, o deslizar el dedo en tablet.
  */
+import { House } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { DIAPOSITIVAS, TOTAL } from "@/presentacion/diapositivas";
 import { disposicion } from "@/presentacion/disposicion";
@@ -14,6 +15,7 @@ import { Controles } from "@/ui/Controles";
 import { Geoda } from "@/ui/Geoda";
 import { FiltrosPlastilina } from "@/graficas/Graficas";
 import { CapaCinematica, useCinematica } from "@/ui/Cinematica";
+import { CapaCoreografia } from "@/ui/CapaCoreografia";
 
 const Escena = lazy(() => import("@/escena/Escena"));
 
@@ -106,11 +108,21 @@ export default function App() {
       <div className="vineta" aria-hidden />
 
       <Panel indice={indice} disp={disp} quieto={quieto} oculto={fase !== "inactiva"} />
+      <CapaCoreografia indice={indice} disp={disp} quieto={quieto} oculto={fase !== "inactiva"} />
       <CapaCinematica fase={fase} disp={disp} onRepetir={iniciar} />
       <Controles indice={indice} disp={disp} />
 
+      {/* volver a la portada (elegir expo o proyecto completo) */}
+      <a
+        href="/"
+        aria-label="Volver a la portada"
+        className="boton-plastilina fixed left-3 top-3 z-30 grid size-11 place-items-center bg-fieltro/85 text-crema"
+      >
+        <House aria-hidden className="size-5" />
+      </a>
+
       {/* acceso por teclado a las geodas del piso (en 3D solo se tocan) */}
-      <nav aria-label="Glosario" className="fixed left-3 top-3 z-30 flex gap-2">
+      <nav aria-label="Glosario" className="fixed left-16 top-3 z-30 flex gap-2">
         {GLOSARIO.map((e, i) => (
           <button
             key={e.id}

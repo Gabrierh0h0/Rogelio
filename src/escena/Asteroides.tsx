@@ -1,8 +1,8 @@
 /*
  * Un asteroide por diapositiva, colgados de hilos y orbitando el planeta.
- * Al cambiar de paso, el asteroide de esa diapositiva vuela hasta quedar detrás del panel,
- * tiembla, y se abre por la mitad mostrando su interior de geoda; el anterior se cierra y
- * vuelve a su órbita. Todo se calcula en doses (12 fps).
+ * Al cambiar de paso, el asteroide de esa diapositiva llega detrás del panel con su cinemática
+ * (escena/coreografias.ts: en el proyecto completo vuela, tiembla y se abre como geoda; en la
+ * expo cada paso llega distinto) y el anterior se cierra y vuelve a su órbita. Todo en doses.
  *
  * Rendimiento: las mitades se dibujan con InstancedMesh (una por variante, lado y material),
  * así 30 asteroides cuestan ~12 llamadas de dibujo.
@@ -15,17 +15,17 @@ import { DISTANCIA_ANCLA, TIEMPOS, type Disposicion } from "@/presentacion/dispo
 import { TOTAL } from "@/presentacion/diapositivas";
 import { cuadroActual, FPS_DOSES, temblor } from "@/lib/enDoses";
 import { materialGeoda } from "./geoda";
+import { estadoCoreo, nuevaPose, poseActiva, reiniciarPose, suave, tramo, type Ctx } from "./coreografias";
+import { cinematicaDe, COREOGRAFIAS } from "@/presentacion/coreografias";
 
 export const URL_ASTEROIDES = "/modelos/asteroides.glb";
 const VARIANTES = 3;
 const RADIO_MODELO = 0.42;
-const APERTURA = THREE.MathUtils.degToRad(72);
+/** dónde quedan las manos del dino respecto a la isla (cinemática "atrapa") */
+const MANOS_DINO = new THREE.Vector3(0, 0.78, 0.72);
 
 type Parte = { geometria: THREE.BufferGeometry; material: THREE.Material };
 
-const suave = (t: number) => t * t * (3 - 2 * t);
-const rebote = (t: number) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
-const tramo = (s: number, a: number, d: number) => Math.min(1, Math.max(0, (s - a) / d));
 
 function hash(i: number) {
   const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
@@ -110,6 +110,22 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
     [],
   );
 
+  const pose = useMemo(nuevaPose, []);
+  const contexto = useMemo<Ctx>(
+    () => ({
+      s: 0,
+      orbita: new THREE.Vector3(),
+      quatOrbita: new THREE.Quaternion(),
+      enOrbita: 1,
+      ancla: new THREE.Vector3(),
+      escalaAbierta: 1,
+      separacion: 1,
+      camara: new THREE.Vector3(),
+      manos: new THREE.Vector3(),
+    }),
+    [],
+  );
+
   const geometriaHilos = useMemo(() => {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(TOTAL * 2 * 3), 3));
@@ -121,25 +137,38 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
     const c = cuadroActual(clock.elapsedTime);
     const ch = cambio.current;
     if (ch.desde < 0) ch.desde = t;
-    const s = quieto ? 99 : t - ch.desde;
+    // solo en desarrollo: window.__coreoS congela la cinemática en ese segundo (para revisarla)
+    const congelado = import.meta.env.DEV ? (window as unknown as { __coreoS?: number }).__coreoS : undefined;
+    const s = typeof congelado === "number" ? congelado : quieto ? 99 : t - ch.desde;
 
     // Ancla: centro del panel, a DISTANCIA_ANCLA de la cámara
     const { x0, x1, y0, y1 } = disp.panel;
     aux.dir.set(x0 + x1 - 1, 1 - (y0 + y1), 0.5).unproject(camara).sub(camara.position).normalize();
     aux.ancla.copy(camara.position).addScaledVector(aux.dir, DISTANCIA_ANCLA);
-    if (!quieto && s >= TIEMPOS.vuelo && s < TIEMPOS.vuelo + TIEMPOS.temblor) {
-      aux.ancla.x += temblor(c, 11, 0.035);
-      aux.ancla.y += temblor(c, 12, 0.035);
-    }
     const altoVisible = 2 * DISTANCIA_ANCLA * Math.tan(THREE.MathUtils.degToRad(camara.fov / 2));
     const anchoVisible = altoVisible * (size.width / size.height);
     // los bultos hacen la piedra ~40% más grande que RADIO_MODELO: por eso 0.36 y no 0.5
     const escalaAbierta = (altoVisible * (y1 - y0) * 0.36) / (2 * RADIO_MODELO);
     const separacion = (anchoVisible * (x1 - x0)) / 2 / escalaAbierta; // en unidades del modelo
 
+    // la cinemática del paso actual (la expo usa una distinta en cada paso)
+    const nombre = cinematicaDe(ch.actual);
+    const ctx = contexto;
+    ctx.s = s;
+    ctx.ancla.copy(aux.ancla);
+    ctx.escalaAbierta = escalaAbierta;
+    ctx.separacion = separacion;
+    ctx.camara.copy(camara.position);
+    ctx.manos.set(...disp.isla).add(MANOS_DINO);
+    estadoCoreo.nombre = nombre;
+    estadoCoreo.s = s;
+    estadoCoreo.ancla.copy(aux.ancla);
+    estadoCoreo.radio = RADIO_MODELO * 1.4 * escalaAbierta;
+
     const { centro, rx, rz } = disp.orbita;
     const posicionHilos = geometriaHilos.attributes.position as THREE.BufferAttribute;
     let activa: THREE.Vector3 | null = null;
+    const p = pose;
 
     for (let v = 0; v < VARIANTES; v++) {
       porVariante[v].forEach((i, casilla) => {
@@ -151,41 +180,49 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
           centro[1] + Math.sin(ang) * 1.3 + Math.sin(ang * 2 + i) * 0.35 + (hash(i) - 0.5) * 0.5,
           centro[2] + Math.sin(ang) * rz,
         );
-        let abre = 0;
-        let vuela = 0; // 0 en órbita, 1 en el ancla
-        if (i === ch.actual) {
-          vuela = suave(tramo(s, 0, TIEMPOS.vuelo));
-          abre = rebote(tramo(s, TIEMPOS.vuelo + TIEMPOS.temblor, TIEMPOS.apertura));
-        } else if (i === ch.anterior && s < TIEMPOS.cierre + TIEMPOS.regreso) {
-          abre = 1 - suave(tramo(s, 0, TIEMPOS.cierre));
-          vuela = 1 - suave(tramo(s, TIEMPOS.cierre, TIEMPOS.regreso));
-        }
-        // anticipación: antes de salir, retrocede un poco
-        const retro =
-          i === ch.actual && !quieto && s < TIEMPOS.vuelo * 0.2
-            ? 0.3 * Math.sin((s / (TIEMPOS.vuelo * 0.2)) * Math.PI)
-            : 0;
-        aux.pos.copy(aux.orbita).lerp(aux.ancla, vuela);
-        aux.pos.z -= retro;
         const enOrbita = (0.5 + hash(i + 7) * 0.3) * (sobre.current === i ? 1.22 : 1);
-        const escala = enOrbita + (escalaAbierta - enOrbita) * vuela;
         aux.euler.set(i * 1.7 + t * 0.25, i * 0.9 + t * 0.18, 0);
-        aux.quat.setFromEuler(aux.euler).slerp(aux.identidad, vuela);
-        aux.esc.setScalar(escala);
-        aux.matAst.compose(aux.pos, aux.quat, aux.esc);
-        if (i === ch.actual) activa = (abre > 0.01 ? aux.ancla : aux.pos).clone();
+        aux.quat.setFromEuler(aux.euler);
 
-        // hilo: del asteroide hacia arriba; se suelta mientras vuela al panel
-        const tope = aux.pos.y + RADIO_MODELO * escala;
-        const visible = vuela < 0.01;
-        posicionHilos.setXYZ(i * 2, aux.pos.x, visible ? tope : -100, aux.pos.z);
-        posicionHilos.setXYZ(i * 2 + 1, aux.pos.x, visible ? tope + 14 : -100, aux.pos.z);
+        reiniciarPose(p, separacion);
+        if (i === ch.actual) {
+          ctx.orbita.copy(aux.orbita);
+          ctx.quatOrbita.copy(aux.quat);
+          ctx.enOrbita = enOrbita;
+          poseActiva(nombre, ctx, p);
+        } else {
+          // el anterior se cierra y vuelve a su órbita; los demás orbitan
+          let abre = 0;
+          let vuela = 0;
+          if (i === ch.anterior && s < TIEMPOS.cierre + TIEMPOS.regreso) {
+            abre = 1 - suave(tramo(s, 0, TIEMPOS.cierre));
+            vuela = 1 - suave(tramo(s, TIEMPOS.cierre, TIEMPOS.regreso));
+          }
+          p.pos.copy(aux.orbita).lerp(aux.ancla, vuela);
+          p.escala = enOrbita + (escalaAbierta - enOrbita) * vuela;
+          p.quat.copy(aux.quat).slerp(aux.identidad, vuela);
+          p.abre = abre;
+          p.hilo = vuela < 0.01;
+        }
+        if (p.sacude && !quieto) {
+          p.pos.x += temblor(c, 11, 0.035);
+          p.pos.y += temblor(c, 12, 0.035);
+        }
+        aux.esc.copy(p.estira).multiplyScalar(p.oculto ? 0 : p.escala);
+        aux.matAst.compose(p.pos, p.quat, aux.esc);
+        if (i === ch.actual) activa = (p.abre > 0.01 ? aux.ancla : p.pos).clone();
+
+        // hilo: del asteroide hacia arriba; se suelta cuando no cuelga
+        const tope = p.pos.y + RADIO_MODELO * p.escala * p.estira.y;
+        const visible = p.hilo && !p.oculto;
+        posicionHilos.setXYZ(i * 2, p.pos.x, visible ? tope : -100, p.pos.z);
+        posicionHilos.setXYZ(i * 2 + 1, p.pos.x, visible ? tope + 14 : -100, p.pos.z);
 
         (["L", "R"] as const).forEach((lado, k) => {
           const signo = lado === "L" ? -1 : 1;
-          aux.euler.set(0, signo * APERTURA * abre, 0);
+          aux.euler.set(signo * p.giro.x * p.abre, signo * p.giro.y * p.abre, signo * p.giro.z * p.abre);
           aux.giro.setFromEuler(aux.euler);
-          aux.desplazo.set(signo * separacion * abre, 0, 0);
+          aux.desplazo.set(signo * p.desplazo.x * p.abre, (p.espejoY ? signo : 1) * p.desplazo.y * p.abre, p.desplazo.z * p.abre);
           aux.matMitad.compose(aux.desplazo, aux.giro, aux.uno);
           aux.mat.multiplyMatrices(aux.matAst, aux.matMitad);
           for (const malla of mallas.current[v * 2 + k] ?? []) malla.setMatrixAt(casilla, aux.mat);
@@ -194,7 +231,7 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
     }
     // el dino mira al asteroide mientras llega y se abre; después vuelve a mirar al público
     // sin asteroide activo (cinemática final) la mirada la maneja Impacto.tsx
-    if (ch.actual >= 0) posActiva.current = s < TIEMPOS.panel + 0.8 ? activa : null;
+    if (ch.actual >= 0) posActiva.current = s < COREOGRAFIAS[nombre].panel + 0.8 ? activa : null;
     for (const fila of mallas.current) {
       for (const malla of fila ?? []) {
         malla.instanceMatrix.needsUpdate = true;

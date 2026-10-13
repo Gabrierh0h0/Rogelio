@@ -323,6 +323,248 @@
   100% { opacity: 0; }
 }
 
+/* ---------- Tablita de plastilina ---------- */
+/* encabezado: tira de cinta de papel, un poco chueca */
+.tabla-plastilina__cinta th {
+  background: oklch(0.83 0.1 80 / 0.75);
+  color: var(--tinta);
+}
+.tabla-plastilina__cinta th:first-child { border-radius: 10px 3px 3px 12px / 6px 3px 3px 9px; }
+.tabla-plastilina__cinta th:last-child { border-radius: 3px 12px 9px 3px / 3px 8px 10px 3px; }
+.tabla-plastilina__cinta { transform: rotate(-0.4deg); }
+
+/* líneas de lápiz entre filas */
+.tabla-plastilina__fila > * {
+  border-bottom: 1.5px dashed oklch(0.45 0.05 60 / 0.28);
+}
+.tabla-plastilina__fila:last-child > * { border-bottom: none; }
+
+/* la fila elegida: una pasada de marcador amarillo, con bordes irregulares */
+.tabla-plastilina__fila--marcador > * {
+  background-image: linear-gradient(
+    176deg,
+    transparent 8%,
+    oklch(0.9 0.15 95 / 0.62) 10%,
+    oklch(0.88 0.16 92 / 0.55) 88%,
+    transparent 91%
+  );
+  font-weight: 700;
+}
+
+/* cada fila entra en doses: aparece aplastada y se asienta */
+.tabla-plastilina__fila {
+  animation: fila-entra calc(var(--cuadro) * 3) steps(3, jump-end) both;
+}
+@keyframes fila-entra {
+  0% { opacity: 0; transform: translateY(6px) scaleY(0.6); }
+  34% { opacity: 1; transform: translateY(-2px) scaleY(1.06); }
+  67% { transform: translateY(1px) scaleY(0.98); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ---------- Cinemáticas de llegada (expo): cómo entra el papel ---------- */
+/* telón: se desenrolla desde arriba */
+.entra-telon {
+  transform-origin: 50% 0;
+  animation: entra-telon calc(var(--cuadro) * 6) steps(6, jump-end) both;
+}
+@keyframes entra-telon {
+  0% { transform: scaleY(0.04); }
+  25% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.07); }
+  75% { transform: scaleY(0.97); }
+  100% { transform: none; }
+}
+/* grieta: se asoma por una rendija y se abre a empujones */
+.entra-grieta {
+  animation: entra-grieta calc(var(--cuadro) * 6) steps(6, jump-end) both;
+}
+@keyframes entra-grieta {
+  0% { clip-path: inset(3% 49% 3% 49%); transform: translateX(-3px); }
+  25% { clip-path: inset(0 40% 0 42%); transform: translateX(4px); }
+  50% { clip-path: inset(-5% 14% -5% 12%); transform: translateX(-2px); }
+  100% { clip-path: inset(-20% -20% -20% -20%); transform: none; }
+}
+/* partido: las dos mitades se juntan en el centro */
+.entra-partido {
+  animation: entra-partido calc(var(--cuadro) * 5) steps(5, jump-end) both;
+}
+@keyframes entra-partido {
+  0% { transform: scaleX(0.06); }
+  40% { transform: scaleX(1.12); }
+  70% { transform: scaleX(0.96); }
+  100% { transform: none; }
+}
+/* masa: sale aplastada y se levanta como masa */
+.entra-masa {
+  transform-origin: 50% 100%;
+  animation: entra-masa calc(var(--cuadro) * 6) steps(6, jump-end) both;
+}
+@keyframes entra-masa {
+  0% { transform: scale(1.5, 0.12); }
+  25% { transform: scale(1.25, 0.45); }
+  50% { transform: scale(0.9, 1.15); }
+  75% { transform: scale(1.04, 0.96); }
+  100% { transform: none; }
+}
+/* corte: aparece en diagonal, siguiendo el tajo */
+.entra-corte {
+  animation: entra-corte calc(var(--cuadro) * 5) steps(5, jump-end) both;
+}
+@keyframes entra-corte {
+  0% { clip-path: polygon(0% 0%, 0% 0%, 0% 0%); }
+  100% { clip-path: polygon(-20% -20%, 280% -20%, -20% 280%); }
+}
+/* iris: se abre en círculo, como la vista del telescopio */
+.entra-iris {
+  animation: entra-iris calc(var(--cuadro) * 6) steps(6, jump-end) both;
+}
+@keyframes entra-iris {
+  0% { clip-path: circle(0% at 50% 50%); }
+  100% { clip-path: circle(150% at 50% 50%); }
+}
+/* red: cae desde arriba y rebota */
+.entra-red {
+  animation: entra-red calc(var(--cuadro) * 6) steps(6, jump-end) both;
+}
+@keyframes entra-red {
+  0% { transform: translateY(-65vh) rotate(-3deg); }
+  40% { transform: translateY(3%) scaleY(0.94); }
+  60% { transform: translateY(-3%) rotate(1deg); }
+  80% { transform: translateY(1%); }
+  100% { transform: none; }
+}
+/* remolino: sale girando del portal */
+.entra-remolino {
+  animation: entra-remolino calc(var(--cuadro) * 8) steps(8, jump-end) both;
+}
+@keyframes entra-remolino {
+  0% { opacity: 0; transform: rotate(-540deg) scale(0.05); }
+  30% { opacity: 1; transform: rotate(-260deg) scale(0.4); }
+  60% { transform: rotate(-40deg) scale(1.05); }
+  80% { transform: rotate(6deg) scale(0.98); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ---------- Cinemáticas de llegada (expo): efectos de pantalla ---------- */
+/* algo de plastilina que aparece de golpe */
+.coreo-aparece {
+  animation: coreo-aparece calc(var(--cuadro) * 4) steps(4, jump-end) both;
+}
+@keyframes coreo-aparece {
+  0% { opacity: 0; transform: scale(0.2) rotate(-8deg); }
+  33% { opacity: 1; transform: scale(1.1) rotate(3deg); }
+  66% { transform: scale(0.96) rotate(-1deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* telescopio: iris oscuro con aro de bronce que se abre sobre el centro del papel */
+@property --r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+.coreo-iris {
+  background: radial-gradient(
+    circle at var(--cx) var(--cy),
+    transparent var(--r),
+    #d3a957 var(--r),
+    #7a5520 calc(var(--r) + 12px),
+    oklch(0.07 0.02 220) calc(var(--r) + 14px)
+  );
+  animation: coreo-iris calc(var(--cuadro) * 18) steps(9, jump-end) both;
+}
+@keyframes coreo-iris {
+  0% { --r: 0px; opacity: 1; }
+  20% { --r: 36px; }
+  55% { --r: 22vmin; }
+  80% { --r: 27vmin; opacity: 1; }
+  100% { --r: 140vmax; opacity: 0; }
+}
+
+/* perilla: la aguja baja de 0.5 al umbral calibrado, con rebote */
+.coreo-aguja {
+  animation: coreo-aguja calc(var(--cuadro) * 8) steps(8, jump-end) calc(var(--cuadro) * 9) both;
+}
+@keyframes coreo-aguja {
+  0% { transform: rotate(var(--desde)); }
+  60% { transform: rotate(calc(var(--hasta) - 7deg)); }
+  80% { transform: rotate(calc(var(--hasta) + 2deg)); }
+  100% { transform: rotate(var(--hasta)); }
+}
+.coreo-cambia__antes { animation: coreo-se-va 1ms linear calc(var(--cuadro) * 15) forwards; }
+.coreo-cambia__despues { visibility: hidden; animation: coreo-llega 1ms linear calc(var(--cuadro) * 15) forwards; }
+@keyframes coreo-se-va { to { visibility: hidden; } }
+@keyframes coreo-llega { to { visibility: visible; } }
+
+/* red: cae, atrapa y forcejea con el asteroide */
+.coreo-red {
+  animation:
+    coreo-red-cae calc(var(--cuadro) * 5) steps(5, jump-end) calc(var(--cuadro) * 6) both,
+    temblor calc(var(--cuadro) * 4) steps(4) calc(var(--cuadro) * 13) 2;
+}
+@keyframes coreo-red-cae {
+  0% { transform: translateY(-80vh); }
+  50% { transform: translateY(4%) scaleY(0.92); }
+  75% { transform: translateY(-3%); }
+  100% { transform: none; }
+}
+
+/* calendario: las hojas pasan de año en año; la última se queda */
+.coreo-hoja {
+  visibility: hidden;
+  transform-origin: 50% 0;
+  animation: coreo-hoja calc(var(--cuadro) * 2.5) steps(3, jump-end) forwards;
+}
+.coreo-hoja--ultima { animation-name: coreo-hoja-queda; }
+@keyframes coreo-hoja {
+  0% { visibility: visible; transform: rotateX(-75deg); }
+  40% { transform: rotateX(8deg); }
+  70% { transform: none; }
+  99% { visibility: visible; }
+  100% { visibility: hidden; }
+}
+@keyframes coreo-hoja-queda {
+  0% { visibility: visible; transform: rotateX(-75deg); }
+  40% { transform: rotateX(8deg); }
+  100% { visibility: visible; transform: none; }
+}
+/* el calendario se hace a un lado cuando se abre el portal */
+.coreo-se-aparta {
+  animation: coreo-se-aparta calc(var(--cuadro) * 3) steps(3, jump-end) calc(var(--cuadro) * 12) both;
+}
+@keyframes coreo-se-aparta {
+  0% { transform: none; }
+  100% { transform: translate(-85%, -95%) rotate(-14deg) scale(0.62); }
+}
+/* remolino del portal: se abre y gira */
+.coreo-remolino {
+  animation: coreo-remolino calc(var(--cuadro) * 23) steps(23, jump-end) both;
+}
+@keyframes coreo-remolino {
+  0%, 40% { transform: scale(0) rotate(0deg); }
+  55% { transform: scale(1) rotate(-240deg); }
+  100% { transform: scale(1.1) rotate(-720deg); }
+}
+
+/* portada: el dino respira y las estrellas se mecen, en doses */
+.portal-dino {
+  transform-origin: 50% 100%;
+  animation: portal-respira calc(var(--cuadro) * 24) steps(12) infinite;
+}
+@keyframes portal-respira {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  50% { transform: scale(1.012, 0.985) rotate(-0.8deg); }
+}
+.portal-estrella {
+  transform-origin: 50% 0;
+  animation: portal-mece calc(var(--cuadro) * 36) steps(18) infinite;
+}
+@keyframes portal-mece {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .grano,
   .temblor,
@@ -334,6 +576,17 @@
   .sale-del-crater,
   .geoda,
   .geoda__cuadro,
+  .portal-dino,
+  .portal-estrella,
+  .tabla-plastilina__fila,
+  .entra-telon,
+  .entra-grieta,
+  .entra-partido,
+  .entra-masa,
+  .entra-corte,
+  .entra-iris,
+  .entra-red,
+  .entra-remolino,
   .destello {
     animation: none;
   }

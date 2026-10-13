@@ -25,6 +25,11 @@ npm install
 npm run dev
 ```
 
+La portada (`/`) deja elegir entre dos versiones con la misma escena:
+
+- **`/expo`**: la exposición de clase, 11 pasos (~10 minutos), con una cinemática distinta en cada asteroide.
+- **`/proyecto`**: el proyecto completo, 30 pasos.
+
 Se navega con las flechas, los botones, tocando un asteroide o deslizando en tablet. Las geodas
 del piso explican los términos (MOID, H, PR-AUC, F2).
 
