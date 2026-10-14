@@ -149,7 +149,7 @@
   padding: 0.08em 0.35em;
   border-radius: 5px;
 }
-.nb-md blockquote { border-left: 4px solid var(--nb-borde); padding-left: 1em; color: var(--nb-suave); }
+.nb-md blockquote { padding: 0.5em 1em; border-radius: 8px; background: #efe8da; color: var(--nb-suave); }
 .nb-md hr { border: 0; border-top: 1px solid var(--nb-borde); }
 .nb-md table, .nb-html table {
   border-collapse: collapse;
