@@ -45,6 +45,8 @@ export type Diapositiva = {
   reaccion: Reaccion;
   /** cómo llega el asteroide y cómo sale el papel (escena/coreografias.ts); por defecto, se abre como geoda */
   cinematica?: Cinematica;
+  /** en cuántas capas se arma (la flecha suma una a la vez); por defecto, 1 */
+  capas?: number;
 };
 
 /** Coreografías de llegada de cada asteroide (la expo usa una distinta en cada paso). */
@@ -112,17 +114,17 @@ const CAPITULOS_EXPO: Capitulo[] = [
 ];
 
 const EXPO: Diapositiva[] = [
-  { id: "portada", capitulo: "inicio", titulo: "¿Nos va a caer un asteroide?", reaccion: "saluda", cinematica: "marioneta" },
-  { id: "x-problema", capitulo: "inicio", titulo: "El problema", reaccion: "susto", cinematica: "huevo" },
-  { id: "x-fuentes", capitulo: "datos", titulo: "Dos fuentes, un método", reaccion: "curioso", cinematica: "gemelos" },
-  { id: "x-escenarios", capitulo: "datos", titulo: "Las variables y los 3 escenarios", reaccion: "piensa", cinematica: "tajadas" },
-  { id: "x-particion", capitulo: "datos", titulo: "Cómo partimos los datos", reaccion: "duda", cinematica: "cuchillo" },
-  { id: "x-cielo", capitulo: "jpl", titulo: "Qué hizo JPL: el cielo cambia", reaccion: "asombro", cinematica: "telescopio" },
-  { id: "x-validacion", capitulo: "validacion", titulo: "Validación cruzada", reaccion: "piensa", cinematica: "folds" },
-  { id: "x-metricas", capitulo: "validacion", titulo: "Métricas y umbral", reaccion: "curioso", cinematica: "perilla" },
-  { id: "x-resultados-nasa", capitulo: "resultados", titulo: "Resultados: el pasado", reaccion: "alivio", cinematica: "lupa" },
-  { id: "x-resultados-jpl", capitulo: "resultados", titulo: "Resultados: el futuro", reaccion: "celebra", cinematica: "calendario" },
-  { id: "x-conclusiones", capitulo: "cierre", titulo: "Conclusiones", reaccion: "celebra", cinematica: "atrapa" },
+  { id: "portada", capitulo: "inicio", titulo: "¿Nos va a caer un asteroide?", reaccion: "saluda", cinematica: "marioneta", capas: 1 },
+  { id: "x-problema", capitulo: "inicio", titulo: "El problema", reaccion: "susto", cinematica: "huevo", capas: 3 },
+  { id: "x-fuentes", capitulo: "datos", titulo: "Dos fuentes, un método", reaccion: "curioso", cinematica: "gemelos", capas: 2 },
+  { id: "x-escenarios", capitulo: "datos", titulo: "Las variables y los 3 escenarios", reaccion: "piensa", cinematica: "tajadas", capas: 3 },
+  { id: "x-particion", capitulo: "datos", titulo: "Cómo partimos los datos", reaccion: "duda", cinematica: "cuchillo", capas: 3 },
+  { id: "x-cielo", capitulo: "jpl", titulo: "Qué hizo JPL: el cielo cambia", reaccion: "asombro", cinematica: "telescopio", capas: 3 },
+  { id: "x-validacion", capitulo: "validacion", titulo: "Validación cruzada", reaccion: "piensa", cinematica: "folds", capas: 3 },
+  { id: "x-metricas", capitulo: "validacion", titulo: "Métricas y umbral", reaccion: "curioso", cinematica: "perilla", capas: 3 },
+  { id: "x-resultados-nasa", capitulo: "resultados", titulo: "Resultados: el pasado", reaccion: "alivio", cinematica: "lupa", capas: 3 },
+  { id: "x-resultados-jpl", capitulo: "resultados", titulo: "Resultados: el futuro", reaccion: "celebra", cinematica: "calendario", capas: 3 },
+  { id: "x-conclusiones", capitulo: "cierre", titulo: "Conclusiones", reaccion: "celebra", cinematica: "atrapa", capas: 2 },
 ];
 
 /** Qué se ve según la ruta: la expo, el proyecto completo o la portada con los dos botones. */

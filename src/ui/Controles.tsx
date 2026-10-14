@@ -5,7 +5,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { CAPITULOS, DIAPOSITIVAS, TOTAL } from "@/presentacion/diapositivas";
 import type { Disposicion } from "@/presentacion/disposicion";
-import { anterior, ir, siguiente } from "@/presentacion/navegacion";
+import { anterior, capasDe, ir, siguiente, useCapa } from "@/presentacion/navegacion";
 import { cn } from "@/lib/utils";
 
 type Props = { indice: number; disp: Disposicion };
@@ -40,6 +40,7 @@ function BotonPlastilina({
 }
 
 export function Controles({ indice, disp }: Props) {
+  const capa = useCapa();
   // horizontal: bajo el panel; vertical: al borde inferior, sobre el planeta (no tapa al dino)
   const { x0, x1 } = disp.panel;
   const posicion =
@@ -49,7 +50,7 @@ export function Controles({ indice, disp }: Props) {
 
   return (
     <nav aria-label="Navegación de la presentación" className="fixed z-20 flex items-center gap-3" style={posicion}>
-      <BotonPlastilina onClick={anterior} disabled={indice === 0} etiqueta="Paso anterior">
+      <BotonPlastilina onClick={anterior} disabled={indice === 0 && capa === 0} etiqueta="Paso anterior">
         <ArrowLeft aria-hidden className="size-5" />
       </BotonPlastilina>
 
@@ -85,9 +86,16 @@ export function Controles({ indice, disp }: Props) {
 
       <p className="ml-auto font-display text-xl font-semibold tabular-nums text-crema md:ml-0" aria-hidden>
         {String(indice + 1).padStart(2, "0")} <span className="text-crema/50">/ {TOTAL}</span>
+        {capasDe(indice) > 1 && (
+          <span className="ml-2 inline-flex items-center gap-1 align-middle" aria-label={`capa ${capa + 1} de ${capasDe(indice)}`}>
+            {Array.from({ length: capasDe(indice) }, (_, k) => (
+              <span key={k} className={cn("piedrita inline-block size-2.5", k <= capa ? "bg-calendula" : "bg-crema/30")} />
+            ))}
+          </span>
+        )}
       </p>
 
-      <BotonPlastilina onClick={siguiente} disabled={indice === TOTAL - 1} etiqueta="Paso siguiente" principal>
+      <BotonPlastilina onClick={siguiente} disabled={indice === TOTAL - 1 && capa === capasDe(indice) - 1} etiqueta="Paso siguiente" principal>
         <span>Siguiente</span>
         <ArrowRight aria-hidden className="size-5" />
       </BotonPlastilina>

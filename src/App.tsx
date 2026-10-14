@@ -16,6 +16,7 @@ import { Geoda } from "@/ui/Geoda";
 import { FiltrosPlastilina } from "@/graficas/Graficas";
 import { CapaCinematica, useCinematica } from "@/ui/Cinematica";
 import { CapaCoreografia } from "@/ui/CapaCoreografia";
+import { CapaExpo } from "@/ui/CapaExpo";
 
 const Escena = lazy(() => import("@/escena/Escena"));
 
@@ -108,6 +109,7 @@ export default function App() {
       <div className="vineta" aria-hidden />
 
       <Panel indice={indice} disp={disp} quieto={quieto} oculto={fase !== "inactiva"} />
+      <CapaExpo indice={indice} disp={disp} quieto={quieto} oculto={fase !== "inactiva"} />
       <CapaCoreografia indice={indice} disp={disp} quieto={quieto} oculto={fase !== "inactiva"} />
       <CapaCinematica fase={fase} disp={disp} onRepetir={iniciar} />
       <Controles indice={indice} disp={disp} />

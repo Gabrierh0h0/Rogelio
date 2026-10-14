@@ -14,6 +14,7 @@ import { REACCION_FASE, type Fase } from "@/presentacion/cinematica";
 import { Impacto, sacudida } from "./Impacto";
 import { DinoVolador, Mundo } from "./Apocalipsis";
 import { ExtrasCoreografia } from "./ExtrasCoreografia";
+import { pantalla } from "./pantalla";
 import { Dino } from "./Dino";
 import { Asteroides } from "./Asteroides";
 import { Banquito, Estrellas, Geodas, Luces, Planeta } from "./Set";
@@ -48,6 +49,7 @@ function Contenido({ indice, quieto, onElegir, onSobre, onGeoda, geoda, onListo,
   const disp = useMemo(() => disposicion(size.width, size.height), [size.width, size.height]);
   const posActiva = useRef<THREE.Vector3 | null>(null);
   const mira = useMemo(() => new THREE.Vector3(...disp.camara.mira), [disp]);
+  const cabeza = useMemo(() => new THREE.Vector3(), []);
 
   // cámara fija de maqueta con un leve paralaje del cursor, en pasos discretos
   useFrame(({ pointer }) => {
@@ -64,6 +66,11 @@ function Contenido({ indice, quieto, onElegir, onSobre, onGeoda, geoda, onListo,
       camara.updateProjectionMatrix();
     }
     camara.lookAt(mira);
+
+    // dónde se ve la cabeza del dino (para el bocadillo de Rogelio en la expo)
+    cabeza.set(disp.isla[0], disp.isla[1] + 2.1, disp.isla[2] + 0.45).project(camara);
+    pantalla.cabeza.x = (cabeza.x + 1) / 2;
+    pantalla.cabeza.y = (1 - cabeza.y) / 2;
   });
 
   const isla = disp.isla;

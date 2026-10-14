@@ -509,6 +509,214 @@
   100% { transform: scale(1.1) rotate(-720deg); }
 }
 
+/* ---------- Expo por capas ---------- */
+/* lo de una capa que todavía no toca: ocupa su lugar, pero no se ve */
+.capa-expo--oculta { visibility: hidden; }
+/* cuando le toca, entra en doses: se asoma aplastado y se asienta */
+.capa-expo--activa { animation: capa-entra calc(var(--cuadro) * 4) steps(4, jump-end) both; }
+@keyframes capa-entra {
+  0% { opacity: 0; transform: translateY(10px) scale(0.97, 0.9); }
+  50% { opacity: 1; transform: translateY(-3px) scale(1.01, 1.03); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* el bocadillo de Rogelio: papel crema con borde de tinta y el piquito hacia la cabeza */
+.bocadillo-rogelio {
+  position: relative;
+  display: block;
+  background: #fff8ea;
+  color: var(--tinta);
+  border: 2.5px solid var(--tinta);
+  border-radius: 18px 22px 20px 16px / 16px 18px 22px 20px;
+  padding: 0.45rem 0.8rem 0.55rem;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 0.75rem + 0.3vw, 1.05rem);
+  line-height: 1.3;
+  box-shadow: 0 5px 0 oklch(0.1 0.03 215 / 0.45);
+  animation: bocadillo-sale calc(var(--cuadro) * 4) steps(4, jump-end) both;
+  transform-origin: 20% 100%;
+}
+.bocadillo-rogelio::after {
+  content: "";
+  position: absolute;
+  left: 1.4rem;
+  bottom: -14px;
+  border: 8px solid transparent;
+  border-top: 10px solid var(--tinta);
+}
+.bocadillo-rogelio__nombre {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--arcilla-roja);
+}
+@keyframes bocadillo-sale {
+  0% { opacity: 0; transform: scale(0.3) rotate(-6deg); }
+  50% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+  75% { transform: scale(0.97); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* notas satélite: papelitos con una tira de cinta, un poco girados */
+.nota-satelite {
+  background: oklch(0.94 0.04 88);
+  color: var(--tinta);
+  padding: 0.9rem 0.95rem 0.85rem;
+  border-radius: 3px;
+  box-shadow: 4px 7px 0 oklch(0.1 0.03 215 / 0.45), 0 14px 20px oklch(0.08 0.03 215 / 0.3);
+  transform: rotate(var(--giro, -2deg));
+  animation: nota-pega calc(var(--cuadro) * 5) steps(5, jump-end) both;
+}
+.nota-satelite::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 72px;
+  height: 20px;
+  translate: -50% 0;
+  rotate: 3deg;
+  background: oklch(0.85 0.1 80 / 0.7);
+}
+.nota-satelite__titulo {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--arcilla-roja);
+}
+@keyframes nota-pega {
+  0% { opacity: 0; transform: translateY(-30px) rotate(calc(var(--giro, -2deg) - 10deg)) scale(0.6); }
+  40% { opacity: 1; transform: translateY(4px) rotate(calc(var(--giro, -2deg) + 3deg)) scale(1.04); }
+  70% { transform: rotate(calc(var(--giro, -2deg) - 1deg)); }
+  100% { opacity: 1; transform: rotate(var(--giro, -2deg)); }
+}
+
+/* etiquetas colgadas de los asteroides: un hilo y un cartoncito de plastilina */
+.etiqueta-ast {
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+.etiqueta-ast__hilo { width: 1.5px; height: 2.4vh; background: oklch(0.9 0.02 85 / 0.7); }
+/* las que cuelgan del techo: el hilo va hacia arriba */
+.etiqueta-ast--techo { transform: translate(-50%, 0); flex-direction: column; }
+.etiqueta-ast__carton {
+  display: block;
+  white-space: nowrap;
+  background: oklch(0.95 0.03 88);
+  color: var(--tinta);
+  border: 2px solid oklch(0.45 0.05 60);
+  border-radius: 10px 8px 12px 7px / 8px 11px 7px 10px;
+  padding: 0.15rem 0.55rem;
+  font-weight: 800;
+  font-size: clamp(0.72rem, 0.66rem + 0.25vw, 0.9rem);
+  box-shadow: 0 3px 0 oklch(0.1 0.03 215 / 0.4);
+  animation: etiqueta-cuelga calc(var(--cuadro) * 5) steps(5, jump-end) both;
+  transform-origin: 50% -2.4vh;
+}
+.etiqueta-ast__carton--peligro { border-color: #b0442c; color: #8f3420; }
+.etiqueta-ast__carton--acento { border-color: #a5600f; }
+.etiqueta-ast__carton--ok { border-color: #1e6aa8; }
+.etiqueta-ast__carton--tachada { text-decoration: line-through 2.5px; opacity: 0.85; }
+.etiqueta-ast button .etiqueta-ast__carton { cursor: pointer; }
+.etiqueta-ast button:hover .etiqueta-ast__carton { background: #fff8ea; }
+@keyframes etiqueta-cuelga {
+  0% { opacity: 0; transform: translateY(-14px) rotate(-14deg); }
+  40% { opacity: 1; transform: rotate(9deg); }
+  70% { transform: rotate(-4deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* chips de plastilina (A/B/C, curvas, "ir al calibrado") */
+.chip-plastilina {
+  border: 2px solid oklch(0.45 0.05 60 / 0.6);
+  background: oklch(0.95 0.03 88 / 0.7);
+  color: var(--tinta);
+  border-radius: 12px 10px 13px 9px / 10px 13px 9px 12px;
+  padding: 0.25rem 0.75rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 3px 0 oklch(0.3 0.05 60 / 0.35);
+}
+button.chip-plastilina { cursor: pointer; min-height: 2.25rem; }
+button.chip-plastilina:active { transform: translateY(2px); box-shadow: 0 1px 0 oklch(0.3 0.05 60 / 0.35); }
+.chip-plastilina--activo { background: oklch(0.8 0.14 75); border-color: oklch(0.45 0.08 60); }
+.chip-plastilina--fijo { box-shadow: none; }
+
+/* variables: pastillas que se tachan al quitarlas en un escenario */
+.pastilla-variable {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: oklch(0.88 0.06 230 / 0.45);
+  border: 1.5px solid oklch(0.55 0.08 235 / 0.5);
+}
+.pastilla-variable--fuera {
+  background: oklch(0.85 0.1 35 / 0.25);
+  border-color: #b0442c;
+  color: #8f3420;
+  text-decoration: line-through 2px;
+}
+
+/* particiones */
+.barra-partida__trozo {
+  min-width: 3.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px 6px 12px 7px;
+  border: 2px solid oklch(0.4 0.05 60 / 0.45);
+}
+
+/* deslizador de plastilina */
+.deslizador { accent-color: #b0442c; height: 1.6rem; }
+
+/* fichas de las dos fuentes */
+.ficha-fuente {
+  border: 2px solid oklch(0.45 0.05 60 / 0.3);
+  border-radius: 18px 14px 20px 12px / 14px 20px 12px 18px;
+  background: oklch(0.95 0.03 88 / 0.55);
+  padding: 0.9rem 1rem;
+}
+.ficha-fuente__fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+}
+.ficha-fuente__fila--activa { background: oklch(0.9 0.15 95 / 0.6); }
+
+/* diagrama de folds: cada vuelta entra en orden */
+.fila-fold { animation: capa-entra calc(var(--cuadro) * 3) steps(3, jump-end) both; }
+.celda-fold {
+  flex: 1;
+  height: 1.15rem;
+  border-radius: 5px 3px 6px 3px;
+  background: oklch(0.78 0.08 230 / 0.5);
+  border: 1.5px solid oklch(0.45 0.08 235 / 0.4);
+}
+.celda-fold--prueba { background: oklch(0.72 0.15 40 / 0.85); border-color: #8f3420; }
+
+/* el embudo de JPL */
+.embudo-fila { animation: capa-entra calc(var(--cuadro) * 3) steps(3, jump-end) both; }
+
+/* matriz de confusión que se llena ficha por ficha */
+.ficha-cae { animation: ficha-cae calc(var(--cuadro) * 4) steps(4, jump-end) both; }
+@keyframes ficha-cae {
+  0% { opacity: 0; transform: translateY(-24px) rotate(-8deg); }
+  50% { opacity: 1; transform: translateY(3px) scale(1.06, 0.92); }
+  75% { transform: translateY(-1px); }
+  100% { opacity: 1; transform: none; }
+}
+
 /* portada: el dino respira y las estrellas se mecen, en doses */
 .portal-dino {
   transform-origin: 50% 100%;
@@ -541,6 +749,13 @@
   .portal-dino,
   .portal-estrella,
   .tabla-plastilina__fila,
+  .capa-expo--activa,
+  .bocadillo-rogelio,
+  .nota-satelite,
+  .etiqueta-ast__carton,
+  .fila-fold,
+  .embudo-fila,
+  .ficha-cae,
   .entra-telon,
   .entra-grieta,
   .entra-fusion,

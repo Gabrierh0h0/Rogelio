@@ -15,6 +15,7 @@ import { DISTANCIA_ANCLA, TIEMPOS, type Disposicion } from "@/presentacion/dispo
 import { TOTAL } from "@/presentacion/diapositivas";
 import { cuadroActual, FPS_DOSES, temblor } from "@/lib/enDoses";
 import { materialGeoda } from "./geoda";
+import { pantalla } from "./pantalla";
 import {
   estadoCoreo,
   nuevaPose,
@@ -115,6 +116,7 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
       desplazo: new THREE.Vector3(),
       giro: new THREE.Quaternion(),
       uno: new THREE.Vector3(1, 1, 1),
+      proy: new THREE.Vector3(),
     }),
     [],
   );
@@ -230,6 +232,13 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
         posicionHilos.setXYZ(i * 2, p.pos.x, visible ? tope : -100, p.pos.z);
         posicionHilos.setXYZ(i * 2 + 1, p.pos.x, visible ? tope + 14 : -100, p.pos.z);
 
+        // dónde se ve la punta del asteroide en pantalla (para colgarle etiquetas en la expo)
+        aux.proy.set(p.pos.x, tope, p.pos.z).project(camara);
+        const punto = (pantalla.asteroides[i] ??= { x: 0, y: 0, delante: true });
+        punto.x = (aux.proy.x + 1) / 2;
+        punto.y = (1 - aux.proy.y) / 2;
+        punto.delante = !p.oculto && aux.proy.z < 1 && p.pos.z > camara.position.z - 30;
+
         (["L", "R"] as const).forEach((lado, k) => {
           const signo = lado === "L" ? -1 : 1;
           aux.euler.set(signo * p.giro.x * p.abre, signo * p.giro.y * p.abre, signo * p.giro.z * p.abre);
@@ -251,6 +260,7 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
       }
     }
     posicionHilos.needsUpdate = true;
+    pantalla.version++;
   });
 
   const eventos = (v: number) => ({

@@ -3,6 +3,8 @@
  * queda la isla del dino (3D). El asteroide activo se abre justo detrás del panel, así
  * que la escena y la interfaz tienen que usar las mismas medidas.
  */
+import { MODO } from "./diapositivas";
+
 export type Modo = "horizontal" | "vertical";
 
 export type Disposicion = {
@@ -21,7 +23,8 @@ export function disposicion(ancho: number, alto: number): Disposicion {
   if (aspecto >= 1.1) {
     return {
       modo: "horizontal",
-      panel: { x0: 0.4, x1: 0.965, y0: 0.07, y1: 0.85 },
+      // en la expo el papel deja una columna libre a su izquierda para las notas satélite
+      panel: { x0: MODO === "expo" ? 0.455 : 0.4, x1: 0.965, y0: 0.07, y1: 0.85 },
       // más arriba que antes para que se vea media Tierra con sus continentes
       isla: [-3.05, -1.3, 0],
       orbita: { centro: [-1.2, 0.4, -2.4], rx: 5.6, rz: 2.6 },

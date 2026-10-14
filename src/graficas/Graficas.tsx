@@ -7,6 +7,7 @@
  */
 import { useId, useMemo, useState, type ReactNode } from "react";
 import { usePrefiereMenosMovimiento } from "@/lib/movimiento";
+import { Contador } from "@/ui/Capa";
 
 /** Paleta validada con validate_palette.js (skill dataviz) sobre el pergamino (#ead9b0). */
 export const COLOR = {
@@ -464,6 +465,7 @@ export function MatrizConfusion({
   filas = ["Real: no peligroso", "Real: peligroso"],
   columnas = ["Dijo: no peligroso", "Dijo: peligroso"],
   etiquetas = ["acierta", "falsa alarma", "se escapa", "detecta"],
+  animada = false,
 }: {
   titulo: string;
   vn: number;
@@ -473,6 +475,8 @@ export function MatrizConfusion({
   filas?: [string, string];
   columnas?: [string, string];
   etiquetas?: [string, string, string, string];
+  /** expo: las fichas caen una a una y los números cuentan */
+  animada?: boolean;
 }) {
   const id = useId();
   const celdas = [
@@ -501,10 +505,16 @@ export function MatrizConfusion({
               return (
                 <div
                   key={c}
-                  className="boton-plastilina grid place-items-center px-2 py-3"
-                  style={{ background: celda.fondo, boxShadow: `inset 0 0 0 2px ${celda.borde}, 0 3px 0 rgba(60,40,20,.25)` }}
+                  className={`boton-plastilina grid place-items-center px-2 py-3${animada ? " ficha-cae" : ""}`}
+                  style={{
+                    background: celda.fondo,
+                    boxShadow: `inset 0 0 0 2px ${celda.borde}, 0 3px 0 rgba(60,40,20,.25)`,
+                    animationDelay: animada ? `calc(var(--cuadro) * ${2 + (r * 2 + c) * 3})` : undefined,
+                  }}
                 >
-                  <span className="font-display text-3xl font-extrabold leading-none">{celda.v.toLocaleString("en-US")}</span>
+                  <span className="font-display text-3xl font-extrabold leading-none">
+                    {animada ? <Contador hasta={celda.v} formato={(v) => Math.round(v).toLocaleString("en-US")} /> : celda.v.toLocaleString("en-US")}
+                  </span>
                   <span className="text-xs font-bold uppercase tracking-wide text-[color:var(--tinta-suave)]">{etiquetas[r * 2 + c]}</span>
                 </div>
               );
@@ -523,11 +533,14 @@ export function Cifra({
   etiqueta,
   nota,
   tono = "tinta",
+  cuenta,
 }: {
   valor: string;
   etiqueta: string;
   nota?: string;
   tono?: "tinta" | "peligro" | "ok" | "acento";
+  /** expo: la cifra sube contando hasta este número (valor queda como texto final y medida) */
+  cuenta?: { hasta: number; formato: (v: number) => string };
 }) {
   const color = { tinta: COLOR.tinta, peligro: COLOR.peligroso, ok: COLOR.noPeligroso, acento: COLOR.B }[tono];
   return (
@@ -538,7 +551,7 @@ export function Cifra({
         }`}
         style={{ color }}
       >
-        {valor}
+        {cuenta ? <Contador hasta={cuenta.hasta} formato={cuenta.formato} /> : valor}
       </span>
       <span className="mt-1 text-sm font-bold leading-snug text-[color:var(--tinta-suave)]">{etiqueta}</span>
       {nota && <span className="text-xs leading-snug text-[color:var(--tinta-suave)]">{nota}</span>}
