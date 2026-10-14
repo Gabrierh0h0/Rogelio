@@ -2,7 +2,6 @@
  * Efectos de pantalla (DOM) de algunas cinemáticas de llegada, encima de la escena y antes de
  * que salga el papel. Cada uno dura lo que tarda su cinemática (presentacion/coreografias.ts)
  * y se desmonta solo. No aparecen en la primera carga ni con "reducir movimiento".
- * - telescopio: iris oscuro con aro de bronce que se abre sobre el asteroide.
  * - perilla: medidor de plastilina; la aguja baja de 0.5 al umbral calibrado.
  * - calendario: un calendario de mesa pasa las hojas hasta el presente y abre un remolino.
  * - folds: la etiqueta del fold de prueba, de 1 a 5.
@@ -138,10 +137,6 @@ export function CapaCoreografia({ indice, disp, quieto, oculto }: Props) {
   const nombre = cinematicaDe(activo);
   const { x0, x1, y0, y1 } = disp.panel;
 
-  if (nombre === "telescopio") {
-    const centro = { "--cx": `${((x0 + x1) / 2) * 100}%`, "--cy": `${((y0 + y1) / 2) * 100}%` } as CSSProperties;
-    return <div key={activo} className="coreo-iris pointer-events-none fixed inset-0 z-20" style={centro} aria-hidden />;
-  }
 
   const contenido =
     nombre === "perilla" ? <Perilla /> : nombre === "calendario" ? <Calendario /> : nombre === "folds" ? <Folds /> : null;

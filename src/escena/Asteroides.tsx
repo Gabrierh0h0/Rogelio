@@ -15,7 +15,17 @@ import { DISTANCIA_ANCLA, TIEMPOS, type Disposicion } from "@/presentacion/dispo
 import { TOTAL } from "@/presentacion/diapositivas";
 import { cuadroActual, FPS_DOSES, temblor } from "@/lib/enDoses";
 import { materialGeoda } from "./geoda";
-import { estadoCoreo, nuevaPose, poseActiva, RADIO_MODELO, reiniciarPose, suave, tramo, type Ctx } from "./coreografias";
+import {
+  estadoCoreo,
+  nuevaPose,
+  poseActiva,
+  RADIO_MODELO,
+  reiniciarPose,
+  suave,
+  TELESCOPIO_LOCAL,
+  tramo,
+  type Ctx,
+} from "./coreografias";
 import { cinematicaDe, COREOGRAFIAS } from "@/presentacion/coreografias";
 
 export const URL_ASTEROIDES = "/modelos/asteroides.glb";
@@ -121,6 +131,7 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
       separacion: 1,
       camara: new THREE.Vector3(),
       manos: new THREE.Vector3(),
+      telescopio: new THREE.Vector3(),
     }),
     [],
   );
@@ -159,6 +170,8 @@ export function Asteroides({ indice, disp, quieto, onElegir, onSobre, posActiva 
     ctx.separacion = separacion;
     ctx.camara.copy(camara.position);
     ctx.manos.set(...disp.isla).add(MANOS_DINO);
+    ctx.telescopio.set(...disp.isla).add(TELESCOPIO_LOCAL);
+    estadoCoreo.isla.set(...disp.isla);
     estadoCoreo.nombre = nombre;
     estadoCoreo.s = s;
     estadoCoreo.ancla.copy(aux.ancla);

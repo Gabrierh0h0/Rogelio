@@ -4,6 +4,7 @@
  * - cuchillo: un cuchillo de cartón baja de un tajo y corta el asteroide en dos.
  * - folds: el asteroide estalla en 5 pedazos que orbitan; en cada vuelta uno se ilumina
  *   (el fold de prueba), como la validación cruzada de 5 folds. Luego se vuelven a juntar.
+ * - telescopio: un telescopio de cartón sale de la Tierra al lado del dino y apunta al papel.
  * - lupa: una lupa de bronce baja y se para frente al asteroide para inspeccionarlo.
  * Lee `estadoCoreo`, que Asteroides.tsx actualiza cada cuadro. Todo en doses.
  */
@@ -13,11 +14,12 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { TIEMPOS } from "@/presentacion/disposicion";
 import { cuadroActual, temblor } from "@/lib/enDoses";
-import { estadoCoreo, RADIO_MODELO, suave, tramo } from "./coreografias";
+import { estadoCoreo, RADIO_MODELO, suave, TELESCOPIO_LOCAL, tramo } from "./coreografias";
 import { URL_ASTEROIDES } from "./Asteroides";
 import { usePrecompilar } from "./precompilar";
 
 const N_FOLDS = 5;
+const ARRIBA = new THREE.Vector3(0, 1, 0);
 const V = TIEMPOS.vuelo;
 
 export function ExtrasCoreografia({ quieto }: { quieto: boolean }) {
@@ -58,6 +60,9 @@ export function ExtrasCoreografia({ quieto }: { quieto: boolean }) {
   }, [scene]);
   const grupoGemelo = useRef<THREE.Group>(null);
   const lupa = useRef<THREE.Group>(null);
+  const telescopio = useRef<THREE.Group>(null);
+  const tubo = useRef<THREE.Group>(null);
+  const lente = useRef<THREE.MeshStandardMaterial>(null);
   const aux = useMemo(() => ({ a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3() }), []);
 
   // oculta hasta que se usa: se compila al cargar para que el primer tajo no dé un tirón
@@ -84,6 +89,21 @@ export function ExtrasCoreografia({ quieto }: { quieto: boolean }) {
         const golpe = s >= V + 0.08 && s < V + 0.25;
         ge.scale.set(escala * (golpe ? 1.25 : 1), escala * (golpe ? 0.8 : 1), escala * (golpe ? 1.25 : 1));
         ge.rotation.set(s * 2.4, -s * 1.8, 0);
+      }
+    }
+
+    // --- telescopio: salta de la Tierra al lado del dino, apunta al papel (el asteroide llega por
+    //     esa línea) y se queda mientras dura el paso; el lente brilla cuando lo ve venir
+    const te = telescopio.current;
+    if (te && tubo.current) {
+      te.visible = nombre === "telescopio";
+      if (te.visible) {
+        te.position.copy(estadoCoreo.isla).add(TELESCOPIO_LOCAL);
+        const k = quieto ? 1 : tramo(s, 0, 0.34);
+        te.scale.setScalar(1.5 * (k < 1 ? [0.15, 0.62, 1.16, 0.94][Math.min(3, Math.floor(k * 4))] : 1));
+        aux.c.copy(ancla).sub(te.position).normalize();
+        tubo.current.quaternion.setFromUnitVectors(ARRIBA, aux.c);
+        if (lente.current) lente.current.emissiveIntensity = !quieto && s > 0.2 && s < 1.05 ? 1.1 + temblor(c, 31, 0.35) : 0.3;
       }
     }
 
@@ -152,6 +172,47 @@ export function ExtrasCoreografia({ quieto }: { quieto: boolean }) {
           <boxGeometry args={[0.26, 0.62, 0.16]} />
           <meshStandardMaterial color="#7a4a2a" roughness={0.9} />
         </mesh>
+      </group>
+
+      {/* telescopio de cartón: trípode de palitos, rótula, tubo con bandas de plastilina roja, lente y ocular */}
+      <group ref={telescopio} visible={false}>
+        {[0, 1, 2].map((i) => {
+          const a = (i / 3) * Math.PI * 2 + 0.5;
+          return (
+            <mesh key={i} position={[Math.cos(a) * 0.13, -0.29, Math.sin(a) * 0.13]} rotation={[Math.sin(a) * 0.3, 0, -Math.cos(a) * 0.3]} castShadow>
+              <cylinderGeometry args={[0.02, 0.026, 0.62, 6]} />
+              <meshStandardMaterial color="#8a5a2b" roughness={0.9} />
+            </mesh>
+          );
+        })}
+        <mesh>
+          <sphereGeometry args={[0.065, 12, 10]} />
+          <meshStandardMaterial color="#5c4a36" roughness={0.8} />
+        </mesh>
+        <group ref={tubo}>
+          <mesh position={[0, 0.12, 0]} castShadow>
+            <cylinderGeometry args={[0.078, 0.062, 0.64, 18]} />
+            <meshStandardMaterial color="#c39a62" roughness={0.95} />
+          </mesh>
+          {[-0.1, 0.2].map((y) => (
+            <mesh key={y} position={[0, y, 0]}>
+              <cylinderGeometry args={[0.086, 0.086, 0.05, 18]} />
+              <meshStandardMaterial color="#b0442c" roughness={0.85} />
+            </mesh>
+          ))}
+          <mesh position={[0, 0.45, 0]}>
+            <cylinderGeometry args={[0.1, 0.084, 0.07, 18]} />
+            <meshStandardMaterial color="#b0442c" roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.49, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[0.08, 18]} />
+            <meshStandardMaterial ref={lente} color="#9fd6e6" emissive="#bfefff" emissiveIntensity={0.3} roughness={0.2} />
+          </mesh>
+          <mesh position={[0, -0.24, 0]}>
+            <cylinderGeometry args={[0.03, 0.036, 0.13, 10]} />
+            <meshStandardMaterial color="#3c2f24" roughness={0.8} />
+          </mesh>
+        </group>
       </group>
 
       {/* el gemelo de "gemelos" */}

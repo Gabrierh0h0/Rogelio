@@ -57,7 +57,12 @@ export type Ctx = {
   camara: THREE.Vector3;
   /** dónde están las manos del dino (para atraparlo) */
   manos: THREE.Vector3;
+  /** dónde está el telescopio de cartón (cinemática "telescopio") */
+  telescopio: THREE.Vector3;
 };
+
+/** la rótula del telescopio de cartón, sobre su trípode en la Tierra a la derecha del dino (respecto a la isla) */
+export const TELESCOPIO_LOCAL = new THREE.Vector3(1.0, 0.04, 0.42);
 
 /** Lo que necesita la utilería 3D de las coreografías (lo escribe Asteroides.tsx cada cuadro). */
 export const estadoCoreo = {
@@ -66,6 +71,8 @@ export const estadoCoreo = {
   ancla: new THREE.Vector3(),
   /** radio en el mundo del asteroide abierto */
   radio: 1,
+  /** posición de la isla (dino + Tierra) en el mundo */
+  isla: new THREE.Vector3(),
 };
 
 export function nuevaPose(): Pose {
@@ -202,10 +209,10 @@ const POSES: Record<Cinematica, (c: Ctx, p: Pose) => void> = {
     p.abre = suave(tramo(c.s, V + 0.48, 0.42));
   },
 
-  // llega desde muy lejos, como visto por un telescopio
+  // el dino saca un telescopio de cartón; el asteroide llega desde lejos, justo por donde apunta
   telescopio(c, p) {
-    const k = tramo(c.s, 0, 1.0);
-    aux.a.copy(c.ancla).sub(c.camara).normalize().multiplyScalar(24).add(c.ancla);
+    const k = tramo(c.s, 0.2, 0.8);
+    aux.a.copy(c.ancla).sub(c.telescopio).normalize().multiplyScalar(22).add(c.ancla);
     p.pos.copy(aux.a).lerp(c.ancla, k * k * k);
     p.escala = c.escalaAbierta;
     aux.q.setFromEuler(aux.e.set(c.s * 3, c.s * 2, 0));
