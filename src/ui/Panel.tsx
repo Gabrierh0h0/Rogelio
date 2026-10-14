@@ -4,7 +4,7 @@
  * para colocar el asteroide abierto (src/presentacion/disposicion.ts).
  */
 import { useEffect, useState } from "react";
-import { capituloDe, DIAPOSITIVAS, TOTAL } from "@/presentacion/diapositivas";
+import { DIAPOSITIVAS, TOTAL } from "@/presentacion/diapositivas";
 import type { Disposicion } from "@/presentacion/disposicion";
 import { coreografiaDe } from "@/presentacion/coreografias";
 import { ContenidoDiapositiva } from "@/presentacion/contenido";
@@ -29,7 +29,6 @@ export function Panel({ indice, disp, quieto, oculto = false }: Props) {
   }, [indice, visible, quieto]);
 
   const d = DIAPOSITIVAS[visible];
-  const capitulo = capituloDe(visible);
   const { x0, x1, y0, y1 } = disp.panel;
 
   return (
@@ -49,13 +48,10 @@ export function Panel({ indice, disp, quieto, oculto = false }: Props) {
           claseContenido="papel-scroll flex max-h-full w-full flex-col overflow-y-auto px-[clamp(1.6rem,3.2vw,3rem)] py-[clamp(1.4rem,2.6vw,2.4rem)]"
         >
         <article aria-labelledby="titulo-diapositiva" className="flex flex-col">
-          <p className="text-[length:var(--texto-etiqueta)] font-bold uppercase tracking-[0.12em] text-[color:var(--arcilla-roja)]">
-            {capitulo.nombre} · paso {visible + 1} de {TOTAL}
-          </p>
           {visible === 0 ? null : (
             <h2
               id="titulo-diapositiva"
-              className="mt-1 font-display text-[clamp(1.6rem,1rem+2vw,2.75rem)] font-extrabold leading-[1.02]"
+              className="font-display text-[clamp(1.6rem,1rem+2vw,2.75rem)] font-extrabold leading-[1.02]"
             >
               {d.titulo}
             </h2>

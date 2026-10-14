@@ -4,7 +4,7 @@
  * - lo que dice Rogelio (el dino) en cada capa;
  * - notas satélite alrededor del papel;
  * - etiquetas colgadas de los asteroides que orbitan.
- * Varias cosas se pueden tocar (chips A/B/C, deslizadores de umbral y de año, el modelo perezoso):
+ * Varias cosas se pueden tocar (chips A/B/C, deslizadores de umbral y de año):
  * ese estado vive en estadoExpo.ts. Toda cifra sale de resultados/ (src/data/resultados.ts).
  */
 import type { ReactNode } from "react";
@@ -141,13 +141,13 @@ function Deslizador({
 }
 
 /** Puntitos de plastilina: n en total, `rojos` pintados de peligro. */
-function Puntitos({ n, rojos, tachados }: { n: number; rojos: number; tachados: boolean }) {
+function Puntitos({ n, rojos }: { n: number; rojos: number }) {
   return (
     <div className="flex flex-wrap gap-1.5" aria-hidden>
       {Array.from({ length: n }, (_, i) => (
         <span
           key={i}
-          className={cn("piedrita size-4", i < rojos && tachados && "opacity-40")}
+          className="piedrita size-4"
           style={{ background: i < rojos ? COLOR.peligroso : COLOR.noPeligroso }}
         />
       ))}
@@ -158,7 +158,6 @@ function Puntitos({ n, rojos, tachados }: { n: number; rojos: number; tachados: 
 /* ------------------------------------------------------------------ 2 · el problema */
 
 function Problema() {
-  const { perezoso } = useExpo();
   const prevalencia = metricas.dataset.prevalencia_peligrosos;
   return (
     <>
@@ -183,20 +182,12 @@ function Problema() {
           etiqueta="de los acercamientos son peligrosos (≈ 1 de cada 6)"
           tono="peligro"
         />
-        <Puntitos n={18} rojos={Math.round(18 * prevalencia)} tachados={perezoso} />
+        <Puntitos n={18} rojos={Math.round(18 * prevalencia)} />
       </Capa>
-      <Capa n={3} className="mt-4 flex flex-wrap items-center gap-4">
+      <Capa n={3} className="mt-4">
         <p className="max-w-[46ch] text-sm leading-relaxed text-[color:var(--tinta-suave)]">
           Por eso no basta con la exactitud: medimos sobre la clase peligrosa con <b>PR-AUC</b>, <b>F2</b> y <b>Recall</b>.
         </p>
-        <button
-          type="button"
-          onClick={() => cambiarExpo({ perezoso: !perezoso })}
-          aria-pressed={perezoso}
-          className="boton-plastilina min-h-11 bg-[color:var(--arcilla-roja)] px-5 font-display text-base font-semibold text-crema"
-        >
-          {perezoso ? "Quitar el modelo perezoso" : "Probar el modelo perezoso"}
-        </button>
       </Capa>
     </>
   );
@@ -929,9 +920,9 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
     etiquetas: [
       {
         capa: 2,
-        items: (e) => [
-          e.perezoso ? { texto: "«no»… ¡y era peligroso!", tono: "peligro", tachada: true } : { texto: "peligroso", tono: "peligro" },
-          ...Array.from({ length: 4 }, () => ({ texto: e.perezoso ? "«no»" : "no peligroso", tono: "ok" as const })),
+        items: () => [
+          { texto: "peligroso", tono: "peligro" },
+          ...Array.from({ length: 4 }, () => ({ texto: "no peligroso", tono: "ok" as const })),
         ],
       },
     ],

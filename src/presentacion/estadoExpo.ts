@@ -1,5 +1,5 @@
 /*
- * Lo que se puede tocar en la expo (escenario elegido, umbral, año, modelo perezoso, fila
+ * Lo que se puede tocar en la expo (escenario elegido, umbral, año, fila
  * resaltada). Lo comparten el papel, las notas satélite y las etiquetas de los asteroides,
  * así que vive aquí y no dentro de un componente. Vuelve a su valor inicial al cambiar de paso.
  */
@@ -8,8 +8,6 @@ import { useSyncExternalStore } from "react";
 export type EstadoExpo = {
   /** escenario elegido con los chips A/B/C */
   escenario: "A_completo" | "B_sin_MOID" | "C_sin_definicion";
-  /** "probar el modelo perezoso" (paso 2) */
-  perezoso: boolean;
   /** umbral del deslizador (paso 8); null = el calibrado */
   umbral: number | null;
   /** año del deslizador (paso 6); null = el último */
@@ -22,7 +20,6 @@ export type EstadoExpo = {
 
 const INICIAL: EstadoExpo = {
   escenario: "B_sin_MOID",
-  perezoso: false,
   umbral: null,
   anio: null,
   fila: null,
