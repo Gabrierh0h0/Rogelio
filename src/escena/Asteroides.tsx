@@ -15,12 +15,11 @@ import { DISTANCIA_ANCLA, TIEMPOS, type Disposicion } from "@/presentacion/dispo
 import { TOTAL } from "@/presentacion/diapositivas";
 import { cuadroActual, FPS_DOSES, temblor } from "@/lib/enDoses";
 import { materialGeoda } from "./geoda";
-import { estadoCoreo, nuevaPose, poseActiva, reiniciarPose, suave, tramo, type Ctx } from "./coreografias";
+import { estadoCoreo, nuevaPose, poseActiva, RADIO_MODELO, reiniciarPose, suave, tramo, type Ctx } from "./coreografias";
 import { cinematicaDe, COREOGRAFIAS } from "@/presentacion/coreografias";
 
 export const URL_ASTEROIDES = "/modelos/asteroides.glb";
 const VARIANTES = 3;
-const RADIO_MODELO = 0.42;
 /** dónde quedan las manos del dino respecto a la isla (cinemática "atrapa") */
 const MANOS_DINO = new THREE.Vector3(0, 0.78, 0.72);
 

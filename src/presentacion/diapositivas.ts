@@ -52,13 +52,13 @@ export type Cinematica =
   | "geoda"
   | "marioneta"
   | "huevo"
-  | "partido"
+  | "gemelos"
   | "tajadas"
   | "cuchillo"
   | "telescopio"
   | "folds"
   | "perilla"
-  | "red"
+  | "lupa"
   | "calendario"
   | "atrapa";
 
@@ -114,13 +114,13 @@ const CAPITULOS_EXPO: Capitulo[] = [
 const EXPO: Diapositiva[] = [
   { id: "portada", capitulo: "inicio", titulo: "¿Nos va a caer un asteroide?", reaccion: "saluda", cinematica: "marioneta" },
   { id: "x-problema", capitulo: "inicio", titulo: "El problema", reaccion: "susto", cinematica: "huevo" },
-  { id: "x-fuentes", capitulo: "datos", titulo: "Dos fuentes, un método", reaccion: "curioso", cinematica: "partido" },
+  { id: "x-fuentes", capitulo: "datos", titulo: "Dos fuentes, un método", reaccion: "curioso", cinematica: "gemelos" },
   { id: "x-escenarios", capitulo: "datos", titulo: "Las variables y los 3 escenarios", reaccion: "piensa", cinematica: "tajadas" },
   { id: "x-particion", capitulo: "datos", titulo: "Cómo partimos los datos", reaccion: "duda", cinematica: "cuchillo" },
   { id: "x-cielo", capitulo: "jpl", titulo: "Qué hizo JPL: el cielo cambia", reaccion: "asombro", cinematica: "telescopio" },
   { id: "x-validacion", capitulo: "validacion", titulo: "Validación cruzada", reaccion: "piensa", cinematica: "folds" },
   { id: "x-metricas", capitulo: "validacion", titulo: "Métricas y umbral", reaccion: "curioso", cinematica: "perilla" },
-  { id: "x-resultados-nasa", capitulo: "resultados", titulo: "Resultados: el pasado", reaccion: "alivio", cinematica: "red" },
+  { id: "x-resultados-nasa", capitulo: "resultados", titulo: "Resultados: el pasado", reaccion: "alivio", cinematica: "lupa" },
   { id: "x-resultados-jpl", capitulo: "resultados", titulo: "Resultados: el futuro", reaccion: "celebra", cinematica: "calendario" },
   { id: "x-conclusiones", capitulo: "cierre", titulo: "Conclusiones", reaccion: "celebra", cinematica: "atrapa" },
 ];

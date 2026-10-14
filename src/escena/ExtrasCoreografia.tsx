@@ -1,16 +1,20 @@
 /*
  * Utilería 3D de algunas cinemáticas de llegada (escena/coreografias.ts):
+ * - gemelos: un segundo asteroide llega por la derecha, choca con el primero y se funde.
  * - cuchillo: un cuchillo de cartón baja de un tajo y corta el asteroide en dos.
  * - folds: el asteroide estalla en 5 pedazos que orbitan; en cada vuelta uno se ilumina
  *   (el fold de prueba), como la validación cruzada de 5 folds. Luego se vuelven a juntar.
+ * - lupa: una lupa de bronce baja y se para frente al asteroide para inspeccionarlo.
  * Lee `estadoCoreo`, que Asteroides.tsx actualiza cada cuadro. Todo en doses.
  */
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { TIEMPOS } from "@/presentacion/disposicion";
 import { cuadroActual, temblor } from "@/lib/enDoses";
-import { estadoCoreo, suave, tramo } from "./coreografias";
+import { estadoCoreo, RADIO_MODELO, suave, tramo } from "./coreografias";
+import { URL_ASTEROIDES } from "./Asteroides";
 import { usePrecompilar } from "./precompilar";
 
 const N_FOLDS = 5;
@@ -42,12 +46,62 @@ export function ExtrasCoreografia({ quieto }: { quieto: boolean }) {
     return g;
   }, []);
 
+  // gemelos: el segundo asteroide (otra variante) que llega por la derecha y se funde con el primero
+  const { scene } = useGLTF(URL_ASTEROIDES);
+  const gemelo = useMemo(() => {
+    const o = scene.getObjectByName("asteroide_0")!.clone(true);
+    o.position.set(0, 0, 0);
+    o.traverse((m) => {
+      if ((m as THREE.Mesh).isMesh) m.castShadow = true;
+    });
+    return o;
+  }, [scene]);
+  const grupoGemelo = useRef<THREE.Group>(null);
+  const lupa = useRef<THREE.Group>(null);
+  const aux = useMemo(() => ({ a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3() }), []);
+
   // oculta hasta que se usa: se compila al cargar para que el primer tajo no dé un tirón
   usePrecompilar(raiz);
 
   useFrame(({ clock }) => {
     const { nombre, s, ancla, radio } = estadoCoreo;
     const c = quieto ? 0 : cuadroActual(clock.elapsedTime);
+
+    // --- gemelos: llega por la derecha en arco, choca con el primero y se funde (se encoge dentro)
+    const ge = grupoGemelo.current;
+    if (ge) {
+      ge.visible = !quieto && nombre === "gemelos" && s >= 0.1 && s < V + 0.25;
+      if (ge.visible) {
+        const llega = suave(tramo(s, 0.1, V - 0.1));
+        aux.a.copy(ancla).add(aux.c.set(radio * 5, radio * 0.6, -radio * 0.8));
+        aux.b.copy(ancla).add(aux.c.set(radio * 0.95, 0, 0));
+        ge.position.copy(aux.a).lerp(aux.b, llega);
+        ge.position.y += Math.sin(llega * Math.PI) * radio * 0.9;
+        // al chocar se aplasta contra el otro y se mete en él
+        const funde = tramo(s, V, 0.25);
+        ge.position.lerp(ancla, suave(funde));
+        const escala = (radio / (RADIO_MODELO * 1.4)) * 0.85 * (1 - suave(funde));
+        const golpe = s >= V + 0.08 && s < V + 0.25;
+        ge.scale.set(escala * (golpe ? 1.25 : 1), escala * (golpe ? 0.8 : 1), escala * (golpe ? 1.25 : 1));
+        ge.rotation.set(s * 2.4, -s * 1.8, 0);
+      }
+    }
+
+    // --- lupa: baja desde arriba a la derecha (lejos del dino), se para frente al asteroide,
+    //     se bambolea mientras lo "inspecciona" y se va por donde vino
+    const lu = lupa.current;
+    if (lu) {
+      lu.visible = !quieto && nombre === "lupa" && s >= V - 0.2 && s < V + 1.22;
+      if (lu.visible) {
+        const entra = suave(tramo(s, V - 0.2, 0.42));
+        const sale = suave(tramo(s, V + 0.92, 0.3));
+        aux.a.copy(ancla).add(aux.c.set(radio * 2.6, radio * 4.6, radio * 1.6));
+        aux.b.copy(ancla).add(aux.c.set(0, 0, radio * 1.6));
+        lu.position.copy(aux.a).lerp(aux.b, entra).lerp(aux.a, sale);
+        lu.rotation.set(0, 0, -0.25 + Math.sin(s * 7) * 0.08 * (1 - sale) + temblor(c, 21, 0.03));
+        lu.scale.setScalar(radio);
+      }
+    }
 
     // --- cuchillo: entra por arriba, baja de un tajo por el centro y se va por abajo
     const cu = cuchillo.current;
@@ -98,6 +152,37 @@ export function ExtrasCoreografia({ quieto }: { quieto: boolean }) {
           <boxGeometry args={[0.26, 0.62, 0.16]} />
           <meshStandardMaterial color="#7a4a2a" roughness={0.9} />
         </mesh>
+      </group>
+
+      {/* el gemelo de "gemelos" */}
+      <group ref={grupoGemelo} visible={false}>
+        <primitive object={gemelo} />
+      </group>
+
+      {/* lupa de plastilina: aro de bronce, vidrio apenas azul con un brillo, mango de madera (en unidades del radio) */}
+      <group ref={lupa} visible={false}>
+        <mesh castShadow>
+          <torusGeometry args={[1.18, 0.14, 14, 40]} />
+          <meshStandardMaterial color="#c9a24a" roughness={0.55} metalness={0.35} />
+        </mesh>
+        <mesh>
+          <circleGeometry args={[1.12, 40]} />
+          <meshStandardMaterial color="#cfeaf2" transparent opacity={0.16} roughness={0.1} depthWrite={false} />
+        </mesh>
+        <mesh position={[-0.42, 0.45, 0.02]} rotation={[0, 0, 0.7]}>
+          <capsuleGeometry args={[0.07, 0.42, 4, 8]} />
+          <meshStandardMaterial color="#ffffff" transparent opacity={0.55} roughness={0.2} depthWrite={false} />
+        </mesh>
+        <group rotation={[0, 0, -Math.PI * 0.75]}>
+          <mesh position={[0, 1.42, 0]} castShadow>
+            <cylinderGeometry args={[0.2, 0.2, 0.26, 16]} />
+            <meshStandardMaterial color="#a8822f" roughness={0.5} metalness={0.3} />
+          </mesh>
+          <mesh position={[0, 2.15, 0]} castShadow>
+            <capsuleGeometry args={[0.17, 1.1, 6, 12]} />
+            <meshStandardMaterial color="#7a4a2a" roughness={0.9} />
+          </mesh>
+        </group>
       </group>
 
       {materiales.map((mat, i) => (

@@ -4,7 +4,6 @@
  * y se desmonta solo. No aparecen en la primera carga ni con "reducir movimiento".
  * - telescopio: iris oscuro con aro de bronce que se abre sobre el asteroide.
  * - perilla: medidor de plastilina; la aguja baja de 0.5 al umbral calibrado.
- * - red: una red de cuerda cae y atrapa al asteroide.
  * - calendario: un calendario de mesa pasa las hojas hasta el presente y abre un remolino.
  * - folds: la etiqueta del fold de prueba, de 1 a 5.
  */
@@ -56,31 +55,6 @@ function Perilla() {
   );
 }
 
-function Red() {
-  // red de cazar mariposas: rombos dentro de una bolsa, un aro y un palo de madera
-  const lineas: string[] = [];
-  for (let i = -6; i <= 6; i++) {
-    lineas.push(`M ${i * 22 - 70} 10 L ${i * 22 + 70} 190`);
-    lineas.push(`M ${i * 22 + 70} 10 L ${i * 22 - 70} 190`);
-  }
-  return (
-    <svg viewBox="-200 -130 400 332" className="coreo-red w-[min(80vmin,600px)]" aria-hidden>
-      <defs>
-        <clipPath id="bolsa-red">
-          <path d="M -96 12 C -100 110 -60 196 0 198 C 60 196 100 110 96 12 Z" />
-        </clipPath>
-      </defs>
-      <g clipPath="url(#bolsa-red)" stroke="#d8c39a" strokeWidth="4" strokeLinecap="round" fill="none">
-        {lineas.map((d, i) => (
-          <path key={i} d={d} />
-        ))}
-      </g>
-      <path d="M 92 6 L 188 -118" stroke="#8a5a2b" strokeWidth="11" strokeLinecap="round" />
-      <path d="M 92 6 L 188 -118" stroke="#b07a42" strokeWidth="4" strokeLinecap="round" opacity="0.7" />
-      <ellipse cx="0" cy="12" rx="98" ry="12" fill="none" stroke="#8a5a2b" strokeWidth="9" />
-    </svg>
-  );
-}
 
 function Calendario() {
   const anios: number[] = [];
@@ -170,7 +144,7 @@ export function CapaCoreografia({ indice, disp, quieto, oculto }: Props) {
   }
 
   const contenido =
-    nombre === "perilla" ? <Perilla /> : nombre === "red" ? <Red /> : nombre === "calendario" ? <Calendario /> : nombre === "folds" ? <Folds /> : null;
+    nombre === "perilla" ? <Perilla /> : nombre === "calendario" ? <Calendario /> : nombre === "folds" ? <Folds /> : null;
   if (!contenido) return null;
   return (
     <div

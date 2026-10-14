@@ -385,11 +385,11 @@
   50% { clip-path: inset(-5% 14% -5% 12%); transform: translateX(-2px); }
   100% { clip-path: inset(-20% -20% -20% -20%); transform: none; }
 }
-/* partido: las dos mitades se juntan en el centro */
-.entra-partido {
-  animation: entra-partido calc(var(--cuadro) * 5) steps(5, jump-end) both;
+/* fusión: dos mitades se juntan en el centro, como los dos asteroides */
+.entra-fusion {
+  animation: entra-fusion calc(var(--cuadro) * 5) steps(5, jump-end) both;
 }
-@keyframes entra-partido {
+@keyframes entra-fusion {
   0% { transform: scaleX(0.06); }
   40% { transform: scaleX(1.12); }
   70% { transform: scaleX(0.96); }
@@ -423,16 +423,15 @@
   0% { clip-path: circle(0% at 50% 50%); }
   100% { clip-path: circle(150% at 50% 50%); }
 }
-/* red: cae desde arriba y rebota */
-.entra-red {
-  animation: entra-red calc(var(--cuadro) * 6) steps(6, jump-end) both;
+/* zoom: llega grande, como visto por la lupa, y se aleja hasta su tamaño */
+.entra-zoom {
+  animation: entra-zoom calc(var(--cuadro) * 5) steps(5, jump-end) both;
 }
-@keyframes entra-red {
-  0% { transform: translateY(-65vh) rotate(-3deg); }
-  40% { transform: translateY(3%) scaleY(0.94); }
-  60% { transform: translateY(-3%) rotate(1deg); }
-  80% { transform: translateY(1%); }
-  100% { transform: none; }
+@keyframes entra-zoom {
+  0% { opacity: 0; transform: scale(1.45) rotate(2deg); }
+  30% { opacity: 1; transform: scale(1.18) rotate(-1deg); }
+  60% { transform: scale(0.97); }
+  100% { opacity: 1; transform: none; }
 }
 /* remolino: sale girando del portal */
 .entra-remolino {
@@ -496,19 +495,6 @@
 .coreo-cambia__despues { visibility: hidden; animation: coreo-llega 1ms linear calc(var(--cuadro) * 15) forwards; }
 @keyframes coreo-se-va { to { visibility: hidden; } }
 @keyframes coreo-llega { to { visibility: visible; } }
-
-/* red: cae, atrapa y forcejea con el asteroide */
-.coreo-red {
-  animation:
-    coreo-red-cae calc(var(--cuadro) * 5) steps(5, jump-end) calc(var(--cuadro) * 6) both,
-    temblor calc(var(--cuadro) * 4) steps(4) calc(var(--cuadro) * 13) 2;
-}
-@keyframes coreo-red-cae {
-  0% { transform: translateY(-80vh); }
-  50% { transform: translateY(4%) scaleY(0.92); }
-  75% { transform: translateY(-3%); }
-  100% { transform: none; }
-}
 
 /* calendario: las hojas pasan de año en año; la última se queda */
 .coreo-hoja {
@@ -581,11 +567,11 @@
   .tabla-plastilina__fila,
   .entra-telon,
   .entra-grieta,
-  .entra-partido,
+  .entra-fusion,
   .entra-masa,
   .entra-corte,
   .entra-iris,
-  .entra-red,
+  .entra-zoom,
   .entra-remolino,
   .destello {
     animation: none;

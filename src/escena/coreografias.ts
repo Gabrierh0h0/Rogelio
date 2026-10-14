@@ -11,6 +11,8 @@ import type { Cinematica } from "@/presentacion/diapositivas";
 import { TIEMPOS } from "@/presentacion/disposicion";
 
 export const APERTURA = THREE.MathUtils.degToRad(72);
+/** radio del modelo de asteroide (sin los bultos, que lo agrandan ~40%) */
+export const RADIO_MODELO = 0.42;
 
 export const suave = (t: number) => t * t * (3 - 2 * t);
 export const rebote = (t: number) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
@@ -159,13 +161,21 @@ const POSES: Record<Cinematica, (c: Ctx, p: Pose) => void> = {
     p.abre = rebote(tramo(c.s, vuelo + 0.68, 0.4));
   },
 
-  // se parte en dos y las mitades salen disparadas hacia los lados
-  partido(c, p) {
-    volar(c, p, 0, V);
-    p.sacude = c.s >= V && c.s < V + T;
-    p.giro.set(0, APERTURA * 1.35, 0.5);
-    p.desplazo.x *= 1.7;
-    p.abre = rebote(tramo(c.s, V + T, A * 0.85));
+  // dos asteroides (uno por fuente) llegan de lados opuestos, chocan, se funden en uno y se abre.
+  // El gemelo que llega por la derecha es utilería (ExtrasCoreografia.tsx).
+  gemelos(c, p) {
+    const radio = RADIO_MODELO * 1.4 * c.escalaAbierta;
+    aux.a.copy(c.ancla).add(aux.b.set(-radio * 0.95, 0, 0));
+    if (c.s < V) {
+      volar(c, p, 0, V, aux.a);
+      return;
+    }
+    enAncla(c, p);
+    p.pos.copy(aux.a).lerp(c.ancla, suave(tramo(c.s, V, 0.2)));
+    const choque = c.s - V;
+    if (choque >= 0.1 && choque < 0.3) p.estira.set(1.24, 0.82, 1.24);
+    else if (choque >= 0.3 && choque < 0.45) p.estira.set(0.9, 1.13, 0.9);
+    p.abre = rebote(tramo(c.s, V + 0.52, A));
   },
 
   // se aplasta como masa (en doses), salta de vuelta y se abre
@@ -219,10 +229,12 @@ const POSES: Record<Cinematica, (c: Ctx, p: Pose) => void> = {
     p.abre = rebote(tramo(c.s, V + 0.9, A));
   },
 
-  // llega y queda atrapado en la red: forcejea y luego se abre
-  red(c, p) {
+  // una lupa de bronce baja y lo inspecciona: se ve aumentado y tiembla; luego se abre
+  lupa(c, p) {
     volar(c, p, 0, V);
-    p.sacude = c.s >= V + 0.3 && c.s < V + 0.95;
+    const bajo = c.s >= V + 0.22 && c.s < V + 0.92;
+    if (bajo) p.estira.setScalar(1.2);
+    p.sacude = c.s >= V + 0.35 && c.s < V + 0.85;
     p.abre = rebote(tramo(c.s, V + 0.95, A));
   },
 
