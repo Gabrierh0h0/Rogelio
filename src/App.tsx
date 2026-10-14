@@ -17,8 +17,12 @@ import { FiltrosPlastilina } from "@/graficas/Graficas";
 import { CapaCinematica, useCinematica } from "@/ui/Cinematica";
 import { CapaCoreografia } from "@/ui/CapaCoreografia";
 import { CapaExpo } from "@/ui/CapaExpo";
+import { BotonNotebook } from "@/ui/BotonNotebook";
+import { useVisor, visorAbierto } from "@/notebooks/estado";
 
 const Escena = lazy(() => import("@/escena/Escena"));
+// el visor de notebooks (markdown, fórmulas, código) solo se baja si se abre
+const VisorNotebook = lazy(() => import("@/notebooks/VisorNotebook"));
 
 function useVentana() {
   return useSyncExternalStore(
@@ -44,6 +48,7 @@ export default function App() {
   const [geoda, setGeoda] = useState<number | null>(null);
   const [sobre, setSobre] = useState<Sobre>(null);
   const { fase, iniciar } = useCinematica(indice, quieto);
+  const visor = useVisor();
 
   const onSobre = useCallback((i: number | null, x: number, y: number) => setSobre(i === null ? null : { i, x, y }), []);
   const onListo = useCallback(() => setListo(true), []);
@@ -51,7 +56,7 @@ export default function App() {
   // teclado
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => {
-      if (geoda !== null) return; // el diálogo maneja su propio teclado
+      if (geoda !== null || visorAbierto()) return; // el diálogo y el visor manejan su propio teclado
       const enControl = e.target instanceof HTMLElement && e.target.closest("button, a, input, textarea, select");
       if (["ArrowRight", "PageDown"].includes(e.key) || (e.key === " " && !enControl)) {
         e.preventDefault();
@@ -73,7 +78,7 @@ export default function App() {
       if (e.pointerType !== "mouse") inicio = { x: e.clientX, y: e.clientY, t: performance.now() };
     };
     const sube = (e: PointerEvent) => {
-      if (!inicio || geoda !== null) return;
+      if (!inicio || geoda !== null || visorAbierto()) return;
       const dx = e.clientX - inicio.x;
       const dy = e.clientY - inicio.y;
       const rapido = performance.now() - inicio.t < 700;
@@ -122,6 +127,20 @@ export default function App() {
       >
         <House aria-hidden className="size-5" />
       </a>
+
+      {/* abrir el notebook en la sección de este paso (y volver con Esc) */}
+      <BotonNotebook indice={indice} />
+      {visor.abierto && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-[60] grid place-items-center bg-[#f3eee3] font-bold text-tinta" role="status">
+              Abriendo el notebook…
+            </div>
+          }
+        >
+          <VisorNotebook />
+        </Suspense>
+      )}
 
       {/* acceso por teclado a las geodas del piso (en 3D solo se tocan) */}
       <nav aria-label="Glosario" className="fixed left-16 top-3 z-30 flex gap-2">

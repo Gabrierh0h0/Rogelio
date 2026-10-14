@@ -91,6 +91,9 @@ function Etiqueta({ ancla, vista }: { ancla: Ancla; vista: EtiquetaVista }) {
   );
 }
 
+/** Desde qué x (fracción de la ventana) empieza la esquina del botón "Notebook" (arriba a la derecha). */
+const ESQUINA_BOTON = () => 1 - 250 / window.innerWidth;
+
 /** Si no hay asteroides libres, las etiquetas cuelgan del techo: sobre el borde de arriba del papel. */
 function puntosTecho(disp: Disposicion, cuantas: number): { x: number; y: number }[] {
   const { x0, x1, y0, y1 } = disp.panel;
@@ -98,7 +101,8 @@ function puntosTecho(disp: Disposicion, cuantas: number): { x: number; y: number
   // huecos sobre el borde de arriba del papel (al menos 4), llenados alternados para que queden separados
   const n = Math.max(4, cuantas);
   const orden = [...Array.from({ length: n }, (_, k) => k).filter((k) => k % 2 === 0), ...Array.from({ length: n }, (_, k) => k).filter((k) => k % 2 === 1)];
-  return orden.map((k) => ({ x: x0 + ((x1 - x0) * (k + 0.5)) / n, y: Math.max(0.03, y0 - 0.015) }));
+  const derecha = Math.min(x1, ESQUINA_BOTON()); // no colgar nada debajo del botón "Notebook"
+  return orden.map((k) => ({ x: x0 + ((derecha - x0) * (k + 0.5)) / n, y: Math.max(0.03, y0 - 0.015) }));
 }
 
 /** Si un asteroide se ve bien para colgarle una etiqueta: en pantalla, fuera del papel y lejos del dino. */
@@ -107,6 +111,7 @@ function esLibre(i: number, activo: number, disp: Disposicion) {
   const p = pantalla.asteroides[i];
   if (!p || !p.delante || i === activo) return false;
   if (p.x < 0.05 || p.x > 0.95 || p.y < 0.1 || p.y > 0.86) return false;
+  if (p.x > ESQUINA_BOTON() && p.y < 0.16) return false; // la etiqueta taparía el botón "Notebook"
   if (p.x > x0 - 0.03 && p.x < x1 + 0.03 && p.y > y0 - 0.03 && p.y < y1 + 0.03) return false; // el papel
   const c = pantalla.cabeza;
   if (Math.abs(p.x - c.x) < 0.1 && p.y > c.y - 0.12) return false; // el dino

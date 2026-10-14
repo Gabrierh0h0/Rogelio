@@ -1,6 +1,6 @@
 /*
  * Geodas del piso: un término por geoda. Las definiciones vienen del notebook
- * pipeline_asteroides.ipynb (secciones 1.1, 1.3, 3.7 y 3.9), sin cifras nuevas.
+ * pipeline_asteroides.ipynb (secciones 1.1, 1.3, 5.1 y 5.3), sin cifras nuevas.
  */
 export type Entrada = { id: string; termino: string; texto: string; formula?: string };
 

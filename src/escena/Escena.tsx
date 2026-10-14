@@ -15,6 +15,7 @@ import { Impacto, sacudida } from "./Impacto";
 import { DinoVolador, Mundo } from "./Apocalipsis";
 import { ExtrasCoreografia } from "./ExtrasCoreografia";
 import { pantalla } from "./pantalla";
+import { useVisor } from "@/notebooks/estado";
 import { Dino } from "./Dino";
 import { Asteroides } from "./Asteroides";
 import { Banquito, Estrellas, Geodas, Luces, Planeta } from "./Set";
@@ -121,6 +122,8 @@ function AvisaListo({ onListo }: { onListo: () => void }) {
 
 export default function Escena(props: Props) {
   const visible = usePestanaVisible();
+  // con el visor de notebooks encima no se ve la escena: se pausa
+  const notebookAbierto = useVisor().abierto;
   return (
     <Canvas
       className="!fixed inset-0"
@@ -136,7 +139,7 @@ export default function Escena(props: Props) {
       }}
       aria-hidden
     >
-      <RelojEnDoses activo={!props.quieto && visible} />
+      <RelojEnDoses activo={!props.quieto && visible && !notebookAbierto} />
       <Contenido {...props} />
     </Canvas>
   );
