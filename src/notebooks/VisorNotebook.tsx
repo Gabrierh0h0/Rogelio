@@ -11,6 +11,7 @@ import { usePrefiereMenosMovimiento } from "@/lib/movimiento";
 import { abrirNotebook, cerrarNotebook, useVisor } from "./estado";
 import { NOTEBOOKS, type CualNotebook } from "./secciones";
 import { cargarNotebook, type CeldaVista, type NotebookVista, type SalidaVista } from "./leer";
+import { GraficaPlotly } from "./GraficaPlotly";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.min.css";
 import "./visor.css";
@@ -39,6 +40,7 @@ function guardarPreferencia(clave: string, valor: unknown) {
 function Salida({ s, n }: { s: SalidaVista; n: number | null }) {
   if (s.tipo === "imagen") return <img className="nb-imagen" src={s.src} alt={`Gráfica de la celda [${n ?? ""}]`} />;
   if (s.tipo === "html") return <div className="nb-html" dangerouslySetInnerHTML={{ __html: s.html }} />;
+  if (s.tipo === "plotly") return <GraficaPlotly figura={s.figura} />;
   return <pre className={s.tipo === "error" ? "nb-error" : "nb-texto"}>{s.texto}</pre>;
 }
 

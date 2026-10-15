@@ -8,6 +8,7 @@ import katex from "katex";
 import hljs from "highlight.js/lib/core";
 import python from "highlight.js/lib/languages/python";
 import { NOTEBOOKS, type CualNotebook } from "./secciones";
+import type { FiguraPlotly } from "./GraficaPlotly";
 
 hljs.registerLanguage("python", python);
 
@@ -27,6 +28,7 @@ export type SalidaVista =
   | { tipo: "texto"; texto: string }
   | { tipo: "imagen"; src: string }
   | { tipo: "html"; html: string }
+  | { tipo: "plotly"; figura: FiguraPlotly }
   | { tipo: "error"; texto: string };
 
 export type CeldaVista =
@@ -91,7 +93,10 @@ function salidasDe(lista: SalidaCruda[] = []): SalidaVista[] {
       out.push({ tipo: "error", texto: sinAnsi(s.traceback.join("\n")) });
     } else {
       const d = s.data;
-      if (d["image/png"]) out.push({ tipo: "imagen", src: `data:image/png;base64,${unir(d["image/png"]).replace(/\s/g, "")}` });
+      // gráfica interactiva de plotly (nubes 3D): se dibuja con plotly.js en vez de su HTML con scripts
+      const figura = (d as Record<string, unknown>)["application/vnd.plotly.v1+json"] as FiguraPlotly | undefined;
+      if (figura) out.push({ tipo: "plotly", figura });
+      else if (d["image/png"]) out.push({ tipo: "imagen", src: `data:image/png;base64,${unir(d["image/png"]).replace(/\s/g, "")}` });
       else if (d["image/jpeg"]) out.push({ tipo: "imagen", src: `data:image/jpeg;base64,${unir(d["image/jpeg"]).replace(/\s/g, "")}` });
       else if (d["text/html"])
         out.push({ tipo: "html", html: unir(d["text/html"]).replace(/<(style|script)[\s\S]*?<\/\1>/gi, "") });

@@ -224,6 +224,15 @@
   border: 1px solid var(--nb-borde);
   padding: 0.4em;
 }
+/* nubes 3D de plotly: mismo marco que las imágenes, alto fijo para que el notebook no salte al cargar */
+.nb-plotly {
+  width: 100%;
+  height: 560px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--nb-borde);
+  overflow: hidden;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .nb-visor { animation: none; }
