@@ -43,8 +43,8 @@ const POR_PASO: Record<string, Destino> = {
   futuro: j("j5-3", "JPL 5.3"),
   inciertas: j("j6", "JPL 6"),
   "sin-tamano": j("j5-3", "JPL 5.3"),
-  decisiones: p("s8-3", "8.3"),
-  lecciones: p("s8-3", "8.3"),
+  decisiones: p("s8-2", "8.2"),
+  lecciones: p("s8-2", "8.2"),
   // expo
   "x-problema": p("s1-1", "1.1"),
   "x-fuentes": j(undefined, "JPL"),
@@ -55,7 +55,7 @@ const POR_PASO: Record<string, Destino> = {
   "x-metricas": p("s5-1", "5.1"),
   "x-resultados-nasa": p("s5-3", "5.3"),
   "x-resultados-jpl": j("j5-3", "JPL 5.3"),
-  "x-conclusiones": p("s8-3", "8.3"),
+  "x-conclusiones": p("s8-2", "8.2"),
 };
 
 export const destinoDePaso = (id: string | undefined): Destino => (id && POR_PASO[id]) || p();
