@@ -47,7 +47,7 @@ function Perilla() {
         umbral{" "}
         <span className="relative inline-block min-w-[3ch] text-[color:var(--arcilla-roja)]">
           <span className="coreo-cambia__antes">0.50</span>
-          <span className="coreo-cambia__despues absolute inset-0">{umbral.toFixed(3)}</span>
+          <span className="coreo-cambia__despues absolute inset-0">{umbral.toFixed(2)}</span>
         </span>
       </p>
     </div>

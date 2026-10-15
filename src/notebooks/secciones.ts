@@ -32,7 +32,7 @@ const POR_PASO: Record<string, Destino> = {
   shap: p("s3-5", "3.5"),
   knn: p("s4-1", "4.1"),
   benchmark: p("s4-3", "4.3"),
-  ajuste: p("s4-2", "4.2"),
+  ajuste: p("s5-1", "5.1"),
   umbral: p("s5-1", "5.1"),
   "resultado-b": p("s5-3", "5.3"),
   "abc-test": p("s5-5", "5.5"),

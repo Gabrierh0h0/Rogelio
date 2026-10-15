@@ -4,7 +4,7 @@
  * Las dos únicas excepciones citan salidas impresas del notebook y lo dicen en el comentario.
  */
 import type { ReactNode } from "react";
-import { graficasJpl, jpl, metricas, numero, principal, tablas } from "@/data/resultados";
+import { graficasJpl, metricas, numero, principal, tablas } from "@/data/resultados";
 import { fmt } from "@/lib/formato";
 import { EVENTO_FINAL } from "./cinematica";
 import { CONTENIDO_EXPO } from "./contenidoExpo";
@@ -88,7 +88,7 @@ function Metodo() {
   const fases: [string, string][] = [
     ["Analyze", "Entender la regla de la NASA, el desbalance y plantear 3 escenarios."],
     ["Design", "Partición sin trampa: agrupada por asteroide y con Validación y Test separados."],
-    ["Configure & Build", "Limpieza, escalado, PCA, selección de rasgos, 13 modelos ajustados, umbral y pruebas de sobreajuste."],
+    ["Configure & Build", "Limpieza, escalado, PCA, selección de rasgos, 12 modelos, ajuste y umbral."],
     ["Deploy", "Modelo guardado con joblib y una función de predicción que valida la entrada."],
     ["Operate & Optimize", "Monitoreo del drift con PSI y plan de reentrenamiento."],
   ];
@@ -244,7 +244,7 @@ function Particion() {
       <Lista
         items={[
           <>
-            <b>Train</b>: ajusta y compara modelos con validación cruzada agrupada de 5 pliegues, repetida con 3 semillas.
+            <b>Train</b>: entrena y compara modelos con validación cruzada agrupada de 5 pliegues.
           </>,
           <>
             <b>Validación</b>: solo para elegir el umbral de decisión.
@@ -465,7 +465,7 @@ function Knn() {
         />
       </Bloque>
       <Nota>
-        Con k = 1 memoriza Train (casi 1.0) y generaliza mal; con k muy grande ambas curvas caen. RandomizedSearchCV eligió k ={" "}
+        Con k = 1 memoriza Train (casi 1.0) y generaliza mal; con k muy grande ambas curvas caen. GridSearchCV eligió k ={" "}
         {String(k.gridsearch.params.clf__n_neighbors)} con pesos {k.gridsearch.params.clf__weights === "distance" ? "por distancia" : "uniformes"}{" "}
         (PR-AUC {fmt.decimal(k.gridsearch.pr_auc)}).
       </Nota>
@@ -480,10 +480,10 @@ function Benchmark() {
     .map((f) => f.Modelo);
   return (
     <>
-      <Lead>13 modelos con los mismos Pipelines y sus hiperparámetros ajustados, en los tres escenarios.</Lead>
+      <Lead>12 modelos con los mismos Pipelines, en los tres escenarios.</Lead>
       <Bloque>
         <PuntosEscenarios
-          titulo="PR-AUC en validación cruzada agrupada, repetida con 3 semillas"
+          titulo="PR-AUC en validación cruzada agrupada"
           series={SERIES_ESC}
           filas={modelos.map((mo) => ({
             etiqueta: mo,
@@ -505,13 +505,10 @@ function Ajuste() {
   const params = Object.entries(evalB.mejores_params).map(([k, v]) => `${k.replace("clf__", "")} = ${v}`);
   return (
     <>
-      <Lead>
-        Ajustamos las 13 familias con RandomizedSearchCV (20 combinaciones cada una, validación cruzada agrupada por asteroide) y
-        el ganador de cada escenario sale de comparar los modelos ya ajustados.
-      </Lead>
+      <Lead>Ajustamos los hiperparámetros del ganador de cada escenario con GridSearchCV, también agrupado por asteroide.</Lead>
       <Cifras>
-        <Cifra valor={fmt.decimal(evalB.cv_pr_auc_base, 4)} etiqueta={`${evalB.modelo_nombre} con valores por defecto (PR-AUC CV)`} />
-        <Cifra valor={fmt.decimal(evalB.cv_pr_auc_ajustado, 4)} etiqueta="ajustado (CV repetida)" tono="acento" />
+        <Cifra valor={fmt.decimal(evalB.cv_pr_auc_base, 4)} etiqueta={`${evalB.modelo_nombre} antes (PR-AUC CV)`} />
+        <Cifra valor={fmt.decimal(evalB.cv_pr_auc_ajustado, 4)} etiqueta="después del ajuste" tono="acento" />
       </Cifras>
       <Nota>Mejores parámetros del modelo B: {params.join(" · ")}.</Nota>
       <Bloque>
@@ -520,7 +517,7 @@ function Ajuste() {
             <tr className="border-b-2 border-[rgba(60,40,20,.25)]">
               <th className="py-1.5">Escenario</th>
               <th>Ganador</th>
-              <th>PR-AUC CV (por defecto → ajustado)</th>
+              <th>PR-AUC CV (antes → después)</th>
             </tr>
           </thead>
           <tbody>
@@ -562,7 +559,7 @@ function Umbral() {
           etiquetaX="umbral"
           etiquetaY="métrica"
           marcasX={[
-            { valor: u.umbral_f2, etiqueta: `umbral F2 = ${u.umbral_f2.toFixed(3)}`, color: COLOR.B },
+            { valor: u.umbral_f2, etiqueta: `umbral F2 = ${u.umbral_f2.toFixed(2)}`, color: COLOR.B },
             { valor: 0.5, etiqueta: "0.5 por defecto", color: COLOR.tintaSuave },
           ]}
           alto={175}
@@ -581,7 +578,7 @@ function ResultadoB() {
   return (
     <>
       <Lead>
-        El modelo desplegado ({evalB.modelo_nombre}, sin MOID, umbral {fmt.decimal(evalB.umbral)}) frente a los {confB.umbral_f2.fn + confB.umbral_f2.vp}{" "}
+        El modelo desplegado ({evalB.modelo_nombre}, sin MOID, umbral {evalB.umbral}) frente a los {confB.umbral_f2.fn + confB.umbral_f2.vp}{" "}
         peligrosos de Test, que nunca vio:
       </Lead>
       <Cifras>
@@ -639,7 +636,7 @@ function Despliegue() {
         <div className="flex flex-col gap-4">
         <Cifra valor={`${(principal.modelo.tamano_kb / 1024).toFixed(1)} MB`} etiqueta={principal.modelo.archivo} />
         <Cifra valor={String(principal.modelo.columnas.length)} etiqueta="columnas que exige" />
-        <Cifra valor={fmt.decimal(evalB.umbral)} etiqueta="umbral calibrado" tono="acento" />
+        <Cifra valor={String(evalB.umbral)} etiqueta="umbral calibrado" tono="acento" />
         </div>
         <div>
         <p className="text-sm font-bold uppercase tracking-[0.08em] text-[color:var(--tinta-suave)]">
@@ -760,7 +757,7 @@ function Cielo() {
       <Cifras>
         <Cifra valor={`${hist.H_mediana.toFixed(1)} → ${recientes.H_mediana.toFixed(1)}`} etiqueta="H mediana: antes vs desde 2024" />
         <Cifra valor={`${fmt.porcentaje(hist.pct_pha)} → ${fmt.porcentaje(recientes.pct_pha)}`} etiqueta="peligrosos" tono="peligro" />
-        <Cifra valor={fmt.decimal(jpl.psi.H, 2)} etiqueta="PSI de H: drift fuerte" />
+        <Cifra valor={`${fmt.porcentaje(hist.pct_H_menor_22)} → ${fmt.porcentaje(recientes.pct_H_menor_22)}`} etiqueta="grandes (H ≤ 22)" />
       </Cifras>
       <Nota>{graficasJpl.anio_actual} es un año incompleto.</Nota>
     </>
@@ -774,9 +771,8 @@ function Futuro() {
   return (
     <>
       <Lead>
-        Entrenamos con los asteroides descubiertos hasta {jpl.anio_validacion - 1}, escogimos el umbral con los de{" "}
-        {jpl.anio_validacion}–{graficasJpl.anio_corte - 1} y lo probamos con los {fmt.entero(p.test)} descubiertos desde{" "}
-        {graficasJpl.anio_corte}, como si ya estuviera en producción.
+        Entrenamos solo con asteroides descubiertos antes de {graficasJpl.anio_corte} y lo probamos con los {fmt.entero(p.test)}{" "}
+        descubiertos después, como si ya estuviera en producción.
       </Lead>
       <Dos>
         <MatrizConfusion
@@ -868,15 +864,13 @@ function Decisiones() {
           <b>{metricas.escalador_elegido}</b> dentro de Pipelines; <b>sin PCA</b>, porque empeoraba.
         </>,
         <>
-          <b>{evalB.modelo_nombre}</b> entre 13 modelos ajustados: PR-AUC en validación cruzada repetida, desempate por F2 y
-          estabilidad.
+          <b>{evalB.modelo_nombre}</b> por PR-AUC, desempate por F2 y estabilidad.
         </>,
         <>
-          <b>Umbral {fmt.decimal(evalB.umbral)}</b> calibrado en Validación con F2: menos peligrosos que se escapan.
+          <b>Umbral {evalB.umbral}</b> calibrado en Validación con F2: menos peligrosos que se escapan.
         </>,
         <>
-          <b>Prueba temporal</b> con el catálogo JPL: entrenar con el pasado, escoger el umbral con {jpl.anio_validacion}–
-          {graficasJpl.anio_corte - 1} y evaluar con lo recién descubierto.
+          <b>Prueba temporal</b> con el catálogo JPL: entrenar con el pasado y evaluar con lo recién descubierto.
         </>,
       ]}
     />
