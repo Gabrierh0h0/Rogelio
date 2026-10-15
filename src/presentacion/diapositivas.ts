@@ -119,7 +119,7 @@ const EXPO: Diapositiva[] = [
   { id: "x-fuentes", capitulo: "datos", titulo: "Dos fuentes, un método", reaccion: "curioso", cinematica: "gemelos", capas: 2 },
   { id: "x-escenarios", capitulo: "datos", titulo: "Las variables y los 3 escenarios", reaccion: "piensa", cinematica: "tajadas", capas: 3 },
   { id: "x-particion", capitulo: "datos", titulo: "Cómo partimos los datos", reaccion: "duda", cinematica: "cuchillo", capas: 3 },
-  { id: "x-cielo", capitulo: "jpl", titulo: "Qué hizo JPL: el cielo cambia", reaccion: "asombro", cinematica: "telescopio", capas: 3 },
+  { id: "x-cielo", capitulo: "jpl", titulo: "Qué hizo JPL", reaccion: "asombro", cinematica: "telescopio", capas: 3 },
   { id: "x-validacion", capitulo: "validacion", titulo: "Validación cruzada", reaccion: "piensa", cinematica: "folds", capas: 3 },
   { id: "x-metricas", capitulo: "validacion", titulo: "Métricas y umbral", reaccion: "curioso", cinematica: "perilla", capas: 3 },
   { id: "x-resultados-nasa", capitulo: "resultados", titulo: "Resultados: el pasado", reaccion: "alivio", cinematica: "lupa", capas: 3 },
