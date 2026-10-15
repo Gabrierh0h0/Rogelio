@@ -353,10 +353,10 @@ function Particion() {
       </Capa>
       <Capa n={2} className="mt-4">
         <BarraPartida
-          titulo={`JPL · en el tiempo: entrena con lo descubierto antes de ${corte} y prueba con ${corte}–${graficasJpl.anio_actual}`}
+          titulo={`JPL · en el tiempo: entrena hasta ${jpl.anio_validacion - 1}, calibra con ${jpl.anio_validacion}–${corte - 1} y prueba con ${corte}–${graficasJpl.anio_actual}`}
           segmentos={[
-            { etiqueta: "Train", valor: j.train, color: "oklch(0.78 0.08 230 / 0.55)", detalle: `Descubiertos antes de ${corte}.` },
-            { etiqueta: "Val", valor: j.validacion, color: "oklch(0.82 0.11 80 / 0.7)", detalle: `Descubiertos antes de ${corte}; solo para el umbral.` },
+            { etiqueta: "Train", valor: j.train, color: "oklch(0.78 0.08 230 / 0.55)", detalle: `Descubiertos hasta ${jpl.anio_validacion - 1}.` },
+            { etiqueta: "Val", valor: j.validacion, color: "oklch(0.82 0.11 80 / 0.7)", detalle: `Descubiertos en ${jpl.anio_validacion}–${corte - 1}; para el umbral y la ventana de años.` },
             { etiqueta: "Test", valor: j.test, color: "oklch(0.75 0.12 40 / 0.6)", detalle: `Todos los descubiertos desde ${corte}: el modelo nunca los vio.` },
           ]}
         />
@@ -366,7 +366,7 @@ function Particion() {
           compacta
           columnas={[{ titulo: "Conjunto" }, { titulo: "Para qué", alinear: "izquierda" }]}
           filas={[
-            { celdas: ["Train", "entrenar y validación cruzada (5 folds)"] },
+            { celdas: ["Train", "ajustar y validación cruzada (5 folds × 3 semillas)"] },
             { celdas: ["Validación", "solo calibrar el umbral"] },
             { celdas: ["Test", "una sola vez, al final"], destacada: true },
           ]}
@@ -469,21 +469,23 @@ function DiagramaFolds() {
 function Validacion() {
   const { escenario } = useExpo();
   const filas = benchmark(escenario);
-  const elegidos = ["Bagging", "Gradient Boosting", "Random Forest", "Regresión Logística", "Baseline (Mayoritaria)"];
-  const mejor = filas.filter((f) => f.Modelo !== "Baseline (Mayoritaria)").sort((x, y) => numero(y, "pr_auc") - numero(x, "pr_auc"))[0]?.Modelo;
+  const ordenados = filas.filter((f) => f.Modelo !== "Baseline (Mayoritaria)").sort((x, y) => numero(y, "pr_auc") - numero(x, "pr_auc"));
+  const elegidos = [...ordenados.slice(0, 4).map((f) => f.Modelo), "Baseline (Mayoritaria)"];
+  const mejor = ordenados[0]?.Modelo;
+  const ruido = ordenados[0] ? numero(ordenados[0], "pr_auc_std") : 0;
   return (
     <>
       <Capa n={1} className="grid items-center gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Lead>
-          Cada modelo se entrena 5 veces; en cada vuelta se prueba con un fold que no vio. Todo va dentro de un Pipeline, así que el
-          escalado nunca mira los datos de prueba.
+          Cada modelo se entrena 5 veces, y lo repetimos con 3 semillas; en cada vuelta se prueba con un fold que no vio. Todo va
+          dentro de un Pipeline, así que el escalado nunca mira los datos de prueba.
         </Lead>
         <DiagramaFolds />
       </Capa>
       <Capa n={2} className="mt-3 grid gap-2">
         <Chips etiqueta="Escenario" valor={escenario} opciones={CHIPS_ESC} onCambio={(v) => cambiarExpo({ escenario: v })} />
         <TablaPlastilina
-          titulo="nasa.csv · StratifiedGroupKFold (agrupado por asteroide)"
+          titulo="nasa.csv · StratifiedGroupKFold (agrupado por asteroide, modelos ajustados)"
           compacta
           columnas={[{ titulo: "Modelo" }, { titulo: "PR-AUC" }, { titulo: "F2" }, { titulo: "Recall" }, { titulo: "Exactitud" }]}
           filas={elegidos.map((m) => {
@@ -503,7 +505,9 @@ function Validacion() {
         />
       </Capa>
       <Capa n={3} className="mt-2">
-        <Nota>Diferencias menores al ± (~0.06) son ruido: por eso el criterio fue PR-AUC y, en empate, F2 y estabilidad.</Nota>
+        <Nota>
+          Diferencias menores al ± (~{fmt.decimal(ruido, 2)}) son ruido: por eso el criterio fue PR-AUC y, en empate, F2 y estabilidad.
+        </Nota>
       </Capa>
     </>
   );
@@ -551,18 +555,18 @@ function Metricas() {
           etiquetaX="umbral"
           etiquetaY="métrica"
           marcasX={[
-            { valor: u, etiqueta: `umbral ${u.toFixed(2)}`, color: COLOR.peligroso },
+            { valor: u, etiqueta: `umbral ${u.toFixed(3)}`, color: COLOR.peligroso },
             { valor: 0.5, etiqueta: "0.5", color: COLOR.tintaSuave },
           ]}
           alto={128}
         />
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <Deslizador id="deslizador-umbral" etiqueta="Umbral" min={0.05} max={0.95} paso={0.01} valor={u} onCambio={(v) => cambiarExpo({ umbral: v })} formato={(v) => v.toFixed(2)} />
+          <Deslizador id="deslizador-umbral" etiqueta="Umbral" min={0} max={0.95} paso={0.001} valor={u} onCambio={(v) => cambiarExpo({ umbral: v })} formato={(v) => v.toFixed(3)} />
           <span className="text-sm font-bold tabular-nums">
             F2 {fmt.decimal(m.f2)} · Recall {fmt.decimal(m.recall)} · Precisión {fmt.decimal(m.precision)}
           </span>
           <button type="button" className="chip-plastilina" onClick={() => cambiarExpo({ umbral: null })}>
-            Ir al calibrado ({ub.umbral_f2.toFixed(2)})
+            Ir al calibrado ({ub.umbral_f2.toFixed(3)})
           </button>
         </div>
       </Capa>
@@ -738,8 +742,8 @@ function ResultadosJpl() {
 const REPASO = [
   { texto: `${fmt.porcentaje(metricas.dataset.prevalencia_peligrosos)} peligrosos`, ir: 1 },
   { texto: `+${Number((principal.fuga as Record<string, string | number>[]).find((f) => f.Escenario === "C_sin_definicion")!["Inflado F1 (puntos)"]).toFixed(1)} F1 si no agrupas`, ir: 4 },
-  { texto: `${evalB.modelo_nombre} ${fmt.decimal(numero(benchmark("B_sin_MOID").find((f) => f.Modelo === "Bagging")!, "pr_auc"))}`, ir: 6 },
-  { texto: `umbral ${fmt.decimal(evalB.umbral, 2)}`, ir: 7 },
+  { texto: `${evalB.modelo_nombre} ${fmt.decimal(numero(benchmark("B_sin_MOID").find((f) => f.Modelo === evalB.modelo_nombre)!, "pr_auc"))}`, ir: 6 },
+  { texto: `umbral ${fmt.decimal(evalB.umbral)}`, ir: 7 },
   { texto: `recall ${fmt.decimal(evalB.test.recall)}`, ir: 8 },
   { texto: `${evalJ.B_sin_MOID.test.positivos - evalJ.B_sin_MOID.test.falsos_negativos} de ${evalJ.B_sin_MOID.test.positivos} del futuro`, ir: 9 },
 ];
@@ -750,7 +754,8 @@ function Conclusiones() {
     <>
       <Capa n={1} className="mt-2 grid gap-3 md:grid-cols-3">
         <Tarjeta titulo="La etiqueta es casi una regla" color={COLOR.A}>
-          Con el MOID el modelo solo la copia; si el MOID está disponible, la regla es más simple y explicable.
+          Con el MOID el modelo solo la copia. Y el MOID sale de la órbita: con geometría orbital, B llega a{" "}
+          {fmt.decimal(metricas.moid_desde_orbita.cv[1].pr_auc)}, casi como A.
         </Tarjeta>
         <Tarjeta titulo="Sin MOID sí generaliza" color={COLOR.B}>
           Recall {fmt.decimal(evalB.test.recall)} en nasa.csv y {t.positivos - t.falsos_negativos} de {t.positivos} peligrosos del futuro en
@@ -879,8 +884,8 @@ function CalidadNota() {
 }
 
 const baseline = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === "Baseline (Mayoritaria)")!;
-const bagging = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === "Bagging")!;
-const jplBagging = tablas.jplBenchmarkCv.find((f) => f.Escenario === "B_sin_MOID" && f.Modelo === "Bagging")!;
+const ganadorB = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === evalB.modelo_nombre)!;
+const jplGanadorB = tablas.jplBenchmarkCv.find((f) => f.Escenario === "B_sin_MOID" && f.Modelo === evalJ.B_sin_MOID.modelo_nombre)!;
 const inflado = (esc: Escenario) =>
   Number((principal.fuga as Record<string, string | number>[]).find((f) => f.Escenario === esc)!["Inflado F1 (puntos)"]);
 const rescatados = confB.umbral_05.fn - confB.umbral_f2.fn;
@@ -1012,7 +1017,8 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
       {
         capa: 2,
         items: fija([
-          { texto: `antes de ${graficasJpl.anio_corte}: entrena` },
+          { texto: `hasta ${jpl.anio_validacion - 1}: entrena` },
+          { texto: `${jpl.anio_validacion}–${graficasJpl.anio_corte - 1}: umbral` },
           { texto: `${graficasJpl.anio_corte}–${graficasJpl.anio_actual}: prueba`, tono: "acento" },
         ]),
       },
@@ -1035,7 +1041,11 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
     ],
   },
   "x-validacion": {
-    boca: ["5 vueltas: siempre se prueba con lo que no vio.", "En el escenario realista gana Bagging.", "¡Y en JPL gana el mismo!"],
+    boca: [
+      "5 vueltas, 3 veces: siempre se prueba con lo que no vio.",
+      `En el escenario realista gana ${evalB.modelo_nombre}.`,
+      evalJ.B_sin_MOID.modelo_nombre === evalB.modelo_nombre ? "¡Y en JPL gana el mismo!" : `En JPL gana ${evalJ.B_sin_MOID.modelo_nombre}.`,
+    ],
     notas: [
       {
         capa: 2,
@@ -1043,8 +1053,8 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
         titulo: "La exactitud engaña",
         cuerpo: () => (
           <Mini>
-            Baseline: <b>{fmt.decimal(numero(baseline("B_sin_MOID"), "accuracy"))}</b> sin detectar ninguno. Bagging:{" "}
-            <b>{fmt.decimal(numero(bagging("B_sin_MOID"), "accuracy"))}</b>. Casi igual… y uno detecta, el otro no.
+            Baseline: <b>{fmt.decimal(numero(baseline("B_sin_MOID"), "accuracy"))}</b> sin detectar ninguno. {evalB.modelo_nombre}:{" "}
+            <b>{fmt.decimal(numero(ganadorB("B_sin_MOID"), "accuracy"))}</b>. Casi igual… y uno detecta, el otro no.
           </Mini>
         ),
       },
@@ -1055,9 +1065,9 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
         cuerpo: () => (
           <>
             <Grande tono={COLOR.B}>
-              {fmt.decimal(numero(jplBagging, "pr_auc"))} ± {fmt.decimal(numero(jplBagging, "pr_auc_std"))}
+              {fmt.decimal(numero(jplGanadorB, "pr_auc"))} ± {fmt.decimal(numero(jplGanadorB, "pr_auc_std"))}
             </Grande>
-            <Mini>PR-AUC de Bagging en B, con StratifiedKFold (una fila por asteroide).</Mini>
+            <Mini>PR-AUC de {evalJ.B_sin_MOID.modelo_nombre} en B, con StratifiedKFold (una fila por asteroide).</Mini>
           </>
         ),
       },
@@ -1143,8 +1153,8 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
         titulo: "Entrenado con el pasado",
         cuerpo: () => (
           <Mini>
-            Hasta {graficasJpl.anio_corte - 1} para aprender; {graficasJpl.anio_corte}–{graficasJpl.anio_actual} para el examen. Umbral calibrado:{" "}
-            {fmt.decimal(evalJ.B_sin_MOID.umbral, 2)}.
+            Hasta {jpl.anio_validacion - 1} para aprender; {jpl.anio_validacion}–{graficasJpl.anio_corte - 1} para escoger el umbral (
+            {fmt.decimal(evalJ.B_sin_MOID.umbral, 2)}); {graficasJpl.anio_corte}–{graficasJpl.anio_actual} para el examen.
           </Mini>
         ),
       },

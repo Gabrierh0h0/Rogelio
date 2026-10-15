@@ -84,7 +84,7 @@ const PROYECTO: Diapositiva[] = [
   { id: "shap", capitulo: "datos", titulo: "SHAP: qué mira el modelo", reaccion: "asombro" },
 
   { id: "knn", capitulo: "modelos", titulo: "k-NN: sesgo vs varianza", reaccion: "piensa" },
-  { id: "benchmark", capitulo: "modelos", titulo: "12 modelos × 3 escenarios", reaccion: "curioso" },
+  { id: "benchmark", capitulo: "modelos", titulo: "13 modelos × 3 escenarios", reaccion: "curioso" },
   { id: "ajuste", capitulo: "modelos", titulo: "Ajuste fino", reaccion: "piensa" },
   { id: "umbral", capitulo: "modelos", titulo: "Mover el umbral", reaccion: "alivio" },
   { id: "resultado-b", capitulo: "modelos", titulo: "Resultado del modelo B", reaccion: "celebra" },
