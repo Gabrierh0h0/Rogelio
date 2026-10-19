@@ -217,6 +217,8 @@
 .nb-html tbody th { background: #f7f2e8; font-weight: 700; text-align: left; }
 .nb-imagen {
   display: block;
+  /* tamaño natural de la gráfica: la columna flex de las salidas no la estira */
+  align-self: flex-start;
   max-width: 100%;
   height: auto;
   background: #fff;

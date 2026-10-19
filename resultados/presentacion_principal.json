@@ -1499,7 +1499,7 @@
     "fn": 390,
     "vp": 163
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "k-NN (Ajustado)": {
    "params": {
@@ -1515,7 +1515,7 @@
     "fn": 451,
     "vp": 102
    },
-   "version": "Original"
+   "version": "Importancia Gradient Boosting"
   },
   "SVM (RBF)": {
    "params": {
@@ -1531,7 +1531,7 @@
     "fn": 375,
     "vp": 178
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "Árbol de Decisión": {
    "params": {
@@ -1548,7 +1548,7 @@
     "fn": 208,
     "vp": 345
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "Naive Bayes": {
    "params": {
@@ -1562,7 +1562,7 @@
     "fn": 196,
     "vp": 357
    },
-   "version": "Con PCA (95% varianza)"
+   "version": "PCA (95% varianza)"
   },
   "MLP (Ajustado)": {
    "params": {
@@ -1580,7 +1580,7 @@
     "fn": 298,
     "vp": 255
    },
-   "version": "Original"
+   "version": "Importancia Gradient Boosting"
   },
   "Random Forest": {
    "params": {
@@ -1598,7 +1598,7 @@
     "fn": 251,
     "vp": 302
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "Extra Trees": {
    "params": {
@@ -1616,7 +1616,7 @@
     "fn": 318,
     "vp": 235
    },
-   "version": "Original"
+   "version": "Forward Selection"
   },
   "Bagging": {
    "params": {
@@ -1632,7 +1632,7 @@
     "fn": 262,
     "vp": 291
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "AdaBoost": {
    "params": {
@@ -1647,7 +1647,7 @@
     "fn": 295,
     "vp": 258
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "Gradient Boosting": {
    "params": {
@@ -1664,7 +1664,7 @@
     "fn": 221,
     "vp": 332
    },
-   "version": "Original"
+   "version": "Todas las variables"
   },
   "Stacking Classifier": {
    "params": {
@@ -1679,12 +1679,12 @@
     "fn": 72,
     "vp": 481
    },
-   "version": "Original"
+   "version": "Todas las variables"
   }
  },
  "ganador": {
   "modelo": "Gradient Boosting",
-  "version": "Original",
+  "version": "Todas las variables",
   "columnas": [
    "Absolute Magnitude",
    "Est Dia in KM(min)",

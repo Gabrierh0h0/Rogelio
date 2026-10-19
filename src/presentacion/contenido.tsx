@@ -376,27 +376,37 @@ function Pca() {
 
 function Seleccion() {
   const filas = tablas.seleccionRasgosCv;
-  const subconjuntos = Object.values(metricas.seleccion_rasgos.subconjuntos) as string[][];
-  const nucleo = subconjuntos[0].filter((c) => subconjuntos.every((s) => s.includes(c)));
+  const subconjuntos = Object.entries(metricas.seleccion_rasgos.subconjuntos as Record<string, string[]>).filter(
+    ([metodo]) => metodo !== "Todas las variables",
+  );
+  // las 5 variables que más métodos escogen
+  const votos = new Map<string, number>();
+  for (const [, cols] of subconjuntos) for (const c of cols) votos.set(c, (votos.get(c) ?? 0) + 1);
+  const nucleo = [...votos.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([c]) => c);
+  const version = metricas.ganador.version;
   return (
     <>
-      <Lead>Con el mejor de cada modelo probamos quedarnos solo con las variables que más pesan según SHAP, y comprimirlas con PCA.</Lead>
+      <Lead>
+        Con el mejor de cada modelo probamos {filas.length - 1} formas de usar menos variables: filtros, wrappers, embebidos, SHAP y PCA.
+      </Lead>
       <Bloque>
         <BarrasH
-          titulo="PR-AUC en validación cruzada con cada subconjunto (escenario B)"
+          titulo={`${evalB.modelo_nombre}: PR-AUC en validación cruzada con cada método (escenario B)`}
           anchoEtiqueta={220}
-          max={0.85}
-          filas={filas.map((f, i) => ({
+          max={1}
+          filas={filas.map((f) => ({
             etiqueta: f["Método"],
             valor: numero(f, "pr_auc"),
-            destacada: i === 0,
+            destacada: f["Método"] === version,
             color: f["Método"] === "Todas las variables" ? COLOR.tintaSuave : COLOR.B,
           }))}
         />
       </Bloque>
       <Nota>
-        SHAP deja {nucleo.length} variables: {nucleo.map(nombre).join(", ")}. Ninguna versión superó a las {subconjuntos[0].length}{" "}
-        variables por más de una desviación estándar, así que {evalB.modelo_nombre} las conserva todas.
+        Las variables que más métodos escogen: {nucleo.map(nombre).join(", ")}.{" "}
+        {version === "Todas las variables"
+          ? `Ninguno superó a las ${principal.modelo.columnas.length} variables por más de una desviación estándar, así que ${evalB.modelo_nombre} las conserva todas.`
+          : `${version} superó a todas las variables por más de una desviación estándar, y es la versión que usa ${evalB.modelo_nombre}.`}
       </Nota>
     </>
   );
