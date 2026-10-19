@@ -88,7 +88,7 @@ function Metodo() {
   const fases: [string, string][] = [
     ["Analyze", "Entender la regla de la NASA, el desbalance y plantear 3 escenarios."],
     ["Design", "Partición sin trampa: agrupada por asteroide y con Validación y Test separados."],
-    ["Configure & Build", "Limpieza, escalado, PCA, selección de rasgos, 12 modelos, ajuste y umbral."],
+    ["Configure & Build", "Limpieza, escalado, 12 modelos con sus hiperparámetros, PCA y SHAP sobre el mejor, y umbral."],
     ["Deploy", "Modelo guardado con joblib y una función de predicción que valida la entrada."],
     ["Operate & Optimize", "Monitoreo del drift con PSI y plan de reentrenamiento."],
   ];
@@ -335,7 +335,7 @@ function Escalado() {
 function Pca() {
   const acum = principal.pca.varianza_acumulada;
   const ev = principal.pca.evaluacion as Record<string, string | number>[];
-  const rf = (rep: string) => Number(ev.find((f) => String(f["Representación"]).startsWith(rep) && f.Modelo === "RandomForest")!.pr_auc);
+  const rf = (rep: string) => Number(ev.find((f) => String(f["Representación"]).startsWith(rep))!.pr_auc);
   return (
     <>
       <Lead>PCA resume las variables en menos componentes. Pero comprimir no siempre ayuda a separar las clases.</Lead>
@@ -355,10 +355,10 @@ function Pca() {
           ancho={430}
         />
         <BarrasH
-          titulo="Random Forest: PR-AUC en validación cruzada"
+          titulo={`${evalB.modelo_nombre}: PR-AUC en validación cruzada`}
           anchoEtiqueta={170}
           ancho={430}
-          max={0.8}
+          max={1}
           filas={[
             { etiqueta: "Escalado", valor: rf("Escalado (") },
             { etiqueta: "Escalado + PCA 95%", valor: rf("Escalado + PCA (>=95%"), color: COLOR.peligroso },
@@ -380,7 +380,7 @@ function Seleccion() {
   const nucleo = subconjuntos[0].filter((c) => subconjuntos.every((s) => s.includes(c)));
   return (
     <>
-      <Lead>Probamos 5 técnicas para quedarnos con menos variables (filtro, wrapper, embebidos y SHAP).</Lead>
+      <Lead>Con el mejor de cada modelo probamos quedarnos solo con las variables que más pesan según SHAP, y comprimirlas con PCA.</Lead>
       <Bloque>
         <BarrasH
           titulo="PR-AUC en validación cruzada con cada subconjunto (escenario B)"
@@ -395,9 +395,8 @@ function Seleccion() {
         />
       </Bloque>
       <Nota>
-        Las {subconjuntos.length} técnicas coinciden en un núcleo de {nucleo.length} variables: {nucleo.map(nombre).join(", ")}. El
-        wrapper fue el mejor, pero la mejora cabe dentro de una desviación estándar, así que el modelo final conserva
-        todas.
+        SHAP deja {nucleo.length} variables: {nucleo.map(nombre).join(", ")}. Ninguna versión superó a las {subconjuntos[0].length}{" "}
+        variables por más de una desviación estándar, así que {evalB.modelo_nombre} las conserva todas.
       </Nota>
     </>
   );
@@ -480,7 +479,7 @@ function Benchmark() {
     .map((f) => f.Modelo);
   return (
     <>
-      <Lead>12 modelos con los mismos Pipelines, en los tres escenarios.</Lead>
+      <Lead>12 modelos, cada uno con sus hiperparámetros ajustados con GridSearchCV, en los tres escenarios.</Lead>
       <Bloque>
         <PuntosEscenarios
           titulo="PR-AUC en validación cruzada agrupada"
@@ -505,7 +504,7 @@ function Ajuste() {
   const params = Object.entries(evalB.mejores_params).map(([k, v]) => `${k.replace("clf__", "")} = ${v}`);
   return (
     <>
-      <Lead>Ajustamos los hiperparámetros del ganador de cada escenario con GridSearchCV, también agrupado por asteroide.</Lead>
+      <Lead>Cada modelo tuvo su propia búsqueda de hiperparámetros con GridSearchCV, agrupada por asteroide. Así queda el ganador:</Lead>
       <Cifras>
         <Cifra valor={fmt.decimal(evalB.cv_pr_auc_base, 4)} etiqueta={`${evalB.modelo_nombre} antes (PR-AUC CV)`} />
         <Cifra valor={fmt.decimal(evalB.cv_pr_auc_ajustado, 4)} etiqueta="después del ajuste" tono="acento" />
@@ -578,7 +577,7 @@ function ResultadoB() {
   return (
     <>
       <Lead>
-        El modelo desplegado ({evalB.modelo_nombre}, sin MOID, umbral {evalB.umbral}) frente a los {confB.umbral_f2.fn + confB.umbral_f2.vp}{" "}
+        El modelo desplegado ({evalB.modelo_nombre}, sin MOID, umbral {fmt.decimal(evalB.umbral)}) frente a los {confB.umbral_f2.fn + confB.umbral_f2.vp}{" "}
         peligrosos de Test, que nunca vio:
       </Lead>
       <Cifras>
@@ -636,7 +635,7 @@ function Despliegue() {
         <div className="flex flex-col gap-4">
         <Cifra valor={`${(principal.modelo.tamano_kb / 1024).toFixed(1)} MB`} etiqueta={principal.modelo.archivo} />
         <Cifra valor={String(principal.modelo.columnas.length)} etiqueta="columnas que exige" />
-        <Cifra valor={String(evalB.umbral)} etiqueta="umbral calibrado" tono="acento" />
+        <Cifra valor={fmt.decimal(evalB.umbral)} etiqueta="umbral calibrado" tono="acento" />
         </div>
         <div>
         <p className="text-sm font-bold uppercase tracking-[0.08em] text-[color:var(--tinta-suave)]">
@@ -867,7 +866,7 @@ function Decisiones() {
           <b>{evalB.modelo_nombre}</b> por PR-AUC, desempate por F2 y estabilidad.
         </>,
         <>
-          <b>Umbral {evalB.umbral}</b> calibrado en Validación con F2: menos peligrosos que se escapan.
+          <b>Umbral {fmt.decimal(evalB.umbral)}</b> calibrado en Validación con F2: menos peligrosos que se escapan.
         </>,
         <>
           <b>Prueba temporal</b> con el catálogo JPL: entrenar con el pasado y evaluar con lo recién descubierto.

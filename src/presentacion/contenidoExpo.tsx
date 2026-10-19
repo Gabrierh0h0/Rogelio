@@ -456,7 +456,11 @@ function DiagramaFolds() {
 function Validacion() {
   const { escenario } = useExpo();
   const filas = benchmark(escenario);
-  const elegidos = ["Bagging", "Gradient Boosting", "Random Forest", "Regresión Logística", "Baseline (Mayoritaria)"];
+  const prDe = (m: string) => numero(filas.find((f) => f.Modelo === m)!, "pr_auc");
+  const elegidos = [
+    ...["Bagging", "Gradient Boosting", "Random Forest", "Regresión Logística"].sort((x, y) => prDe(y) - prDe(x)),
+    "Baseline (Mayoritaria)",
+  ];
   const mejor = filas.filter((f) => f.Modelo !== "Baseline (Mayoritaria)").sort((x, y) => numero(y, "pr_auc") - numero(x, "pr_auc"))[0]?.Modelo;
   return (
     <>
@@ -725,7 +729,7 @@ function ResultadosJpl() {
 const REPASO = [
   { texto: `${fmt.porcentaje(metricas.dataset.prevalencia_peligrosos)} peligrosos`, ir: 1 },
   { texto: `+${Number((principal.fuga as Record<string, string | number>[]).find((f) => f.Escenario === "C_sin_definicion")!["Inflado F1 (puntos)"]).toFixed(1)} F1 si no agrupas`, ir: 4 },
-  { texto: `${evalB.modelo_nombre} ${fmt.decimal(numero(benchmark("B_sin_MOID").find((f) => f.Modelo === "Bagging")!, "pr_auc"))}`, ir: 6 },
+  { texto: `${evalB.modelo_nombre} ${fmt.decimal(numero(benchmark("B_sin_MOID").find((f) => f.Modelo === evalB.modelo_nombre)!, "pr_auc"))}`, ir: 6 },
   { texto: `umbral ${fmt.decimal(evalB.umbral, 2)}`, ir: 7 },
   { texto: `recall ${fmt.decimal(evalB.test.recall)}`, ir: 8 },
   { texto: `${evalJ.B_sin_MOID.test.positivos - evalJ.B_sin_MOID.test.falsos_negativos} de ${evalJ.B_sin_MOID.test.positivos} del futuro`, ir: 9 },
@@ -866,7 +870,7 @@ function CalidadNota() {
 }
 
 const baseline = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === "Baseline (Mayoritaria)")!;
-const bagging = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === "Bagging")!;
+const ganadorB = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === evalB.modelo_nombre)!;
 const jplBagging = tablas.jplBenchmarkCv.find((f) => f.Escenario === "B_sin_MOID" && f.Modelo === "Bagging")!;
 const inflado = (esc: Escenario) =>
   Number((principal.fuga as Record<string, string | number>[]).find((f) => f.Escenario === esc)!["Inflado F1 (puntos)"]);
@@ -1022,7 +1026,11 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
     ],
   },
   "x-validacion": {
-    boca: ["5 vueltas: siempre se prueba con lo que no vio.", "En el escenario realista gana Bagging.", "¡Y en JPL gana el mismo!"],
+    boca: [
+      "5 vueltas: siempre se prueba con lo que no vio.",
+      `En el escenario realista gana ${evalB.modelo_nombre}.`,
+      evalJ.B_sin_MOID.modelo_nombre === evalB.modelo_nombre ? "¡Y en JPL gana el mismo!" : `En JPL gana ${evalJ.B_sin_MOID.modelo_nombre}.`,
+    ],
     notas: [
       {
         capa: 2,
@@ -1030,8 +1038,8 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
         titulo: "La exactitud engaña",
         cuerpo: () => (
           <Mini>
-            Baseline: <b>{fmt.decimal(numero(baseline("B_sin_MOID"), "accuracy"))}</b> sin detectar ninguno. Bagging:{" "}
-            <b>{fmt.decimal(numero(bagging("B_sin_MOID"), "accuracy"))}</b>. Casi igual… y uno detecta, el otro no.
+            Baseline: <b>{fmt.decimal(numero(baseline("B_sin_MOID"), "accuracy"))}</b> sin detectar ninguno. {evalB.modelo_nombre}:{" "}
+            <b>{fmt.decimal(numero(ganadorB("B_sin_MOID"), "accuracy"))}</b>. Casi igual… y uno detecta, el otro no.
           </Mini>
         ),
       },
