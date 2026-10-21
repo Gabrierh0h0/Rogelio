@@ -871,7 +871,6 @@ function CalidadNota() {
 
 const baseline = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === "Baseline (Mayoritaria)")!;
 const ganadorB = (esc: Escenario) => benchmark(esc).find((f) => f.Modelo === evalB.modelo_nombre)!;
-const jplBagging = tablas.jplBenchmarkCv.find((f) => f.Escenario === "B_sin_MOID" && f.Modelo === "Bagging")!;
 const inflado = (esc: Escenario) =>
   Number((principal.fuga as Record<string, string | number>[]).find((f) => f.Escenario === esc)!["Inflado F1 (puntos)"]);
 const rescatados = confB.umbral_05.fn - confB.umbral_f2.fn;
@@ -1050,9 +1049,12 @@ export const EXTRAS_EXPO: Record<string, ExtrasPaso> = {
         cuerpo: () => (
           <>
             <Grande tono={COLOR.B}>
-              {fmt.decimal(numero(jplBagging, "pr_auc"))} ± {fmt.decimal(numero(jplBagging, "pr_auc_std"))}
+              {fmt.decimal(evalJ.B_sin_MOID.cv_pr_auc)} ± {fmt.decimal(evalJ.B_sin_MOID.cv_pr_auc_std)}
             </Grande>
-            <Mini>PR-AUC de Bagging en B, con StratifiedKFold (una fila por asteroide).</Mini>
+            <Mini>
+              PR-AUC de {evalJ.B_sin_MOID.modelo_nombre} en B con {evalJ.B_sin_MOID.columnas.length} variables, con StratifiedKFold (una fila por
+              asteroide).
+            </Mini>
           </>
         ),
       },

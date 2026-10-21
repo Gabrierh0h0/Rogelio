@@ -244,52 +244,52 @@
    "Asteroides": 792,
    "PHA reales": 120,
    "% PHA": 0.1515,
-   "PHA detectados": 119,
-   "Recall": 0.9917,
-   "Precision": 0.4312,
-   "F2": 0.787,
-   "PR-AUC": 0.7888,
-   "Falsas alarmas": 157
+   "PHA detectados": 115,
+   "Recall": 0.9583,
+   "Precision": 0.5275,
+   "F2": 0.8238,
+   "PR-AUC": 0.8274,
+   "Falsas alarmas": 103
   },
   {
    "Grupo": "< 30 días",
    "Asteroides": 260,
    "PHA reales": 37,
    "% PHA": 0.1423,
-   "PHA detectados": 37,
-   "Recall": 1.0,
-   "Precision": 0.37,
-   "F2": 0.746,
-   "PR-AUC": 0.781,
-   "Falsas alarmas": 63
+   "PHA detectados": 36,
+   "Recall": 0.973,
+   "Precision": 0.5,
+   "F2": 0.8182,
+   "PR-AUC": 0.8082,
+   "Falsas alarmas": 36
   },
   {
    "Grupo": "30 días - 1 año",
    "Asteroides": 516,
    "PHA reales": 73,
    "% PHA": 0.1415,
-   "PHA detectados": 72,
-   "Recall": 0.9863,
-   "Precision": 0.4417,
-   "F2": 0.7912,
-   "PR-AUC": 0.8107,
-   "Falsas alarmas": 91
+   "PHA detectados": 70,
+   "Recall": 0.9589,
+   "Precision": 0.5185,
+   "F2": 0.8197,
+   "PR-AUC": 0.8372,
+   "Falsas alarmas": 65
   },
   {
    "Grupo": "> 1 año",
    "Asteroides": 16,
    "PHA reales": 10,
    "% PHA": 0.625,
-   "PHA detectados": 10,
-   "Recall": 1.0,
-   "Precision": 0.7692,
-   "F2": 0.9434,
-   "PR-AUC": 0.8924,
-   "Falsas alarmas": 3
+   "PHA detectados": 9,
+   "Recall": 0.9,
+   "Precision": 0.8182,
+   "F2": 0.8824,
+   "PR-AUC": 0.9229,
+   "Falsas alarmas": 2
   }
  ],
  "alertas_b": {
-  "tasa_validacion": 0.11517181129877693,
-  "tasa_test": 0.03482164523173987
+  "tasa_validacion": 0.09274898078043098,
+  "tasa_test": 0.026935209900509585
  }
 }
